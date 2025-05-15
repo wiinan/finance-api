@@ -1,4 +1,4 @@
-import { UserFilterDto, WhereUserParamsDto } from '../users/dtos/user.dto';
+import { UserFilterDto, WhereUserParamsDto } from '../dtos/user.dto';
 
 export class UserHelper {
   private static getConcatQuery(hasInitialFilter: boolean): string {

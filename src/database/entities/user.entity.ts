@@ -25,6 +25,9 @@ export class User {
   @MaxLength(255)
   password: string;
 
+  @Column({ type: 'decimal', default: 0 })
+  balance: number;
+
   @Column({ default: false })
   isDeleted: boolean;
 

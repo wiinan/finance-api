@@ -11,7 +11,7 @@ import {
   UserParamsDto,
 } from './dtos/user.dto';
 import { IUserService } from './interfaces/user.interface';
-import { UserHelper } from '../helpers/user.helpers';
+import { UserHelper } from './helpers/user.helpers';
 import { AuthUtils } from 'src/helpers/auth';
 import { JwtService } from '@nestjs/jwt';
 import { pick } from 'lodash';
