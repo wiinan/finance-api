@@ -28,6 +28,10 @@ export class User {
   @Column({ type: 'decimal', default: 0 })
   balance: number;
 
+  @Column()
+  @MaxLength(25)
+  provider: string;
+
   @Column({ default: false })
   isDeleted: boolean;
 
