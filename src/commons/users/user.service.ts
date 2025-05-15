@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import {
   LoginDto,
   LoginDtoData,
+  UpdateUserDto,
   userDataDto,
   UserDto,
   UserFilterDto,
@@ -89,7 +90,7 @@ export class UserService implements IUserService {
 
   public async update(
     filter: UserParamsDto,
-    data: UserFilterDto,
+    data: UpdateUserDto,
   ): Promise<boolean> {
     const { id } = filter;
 

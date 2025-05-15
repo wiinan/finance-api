@@ -4,6 +4,7 @@ import { DataSource } from 'typeorm';
 import { TypeOrmModule } from './database/config';
 import { UserModule } from './commons/users/user.module';
 import { JwtModule } from '@nestjs/jwt';
+import { GoogleModule } from './commons/google/google.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { JwtModule } from '@nestjs/jwt';
     }),
     TypeOrmModule,
     UserModule,
+    GoogleModule,
   ],
   controllers: [],
   providers: [],

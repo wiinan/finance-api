@@ -1,6 +1,7 @@
 import {
   LoginDto,
   LoginDtoData,
+  UpdateUserDto,
   userDataDto,
   UserDto,
   UserFilterDto,
@@ -12,7 +13,7 @@ export abstract class IUserService {
   abstract findAll(filter?: UserFilterDto): Promise<userDataDto[]>;
   abstract login(data: LoginDto): Promise<LoginDtoData>;
   abstract getProfile(filter: UserFilterDto): Promise<userDataDto>;
-  abstract update(filter: UserParamsDto, data: UserFilterDto): Promise<boolean>;
+  abstract update(filter: UserParamsDto, data: UpdateUserDto): Promise<boolean>;
   abstract delete(filter: UserParamsDto): Promise<boolean>;
   abstract isAdmin(id: number): Promise<number>;
 }

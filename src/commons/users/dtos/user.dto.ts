@@ -30,7 +30,12 @@ export type UserFilterDto = {
   email?: string;
   isDeleted?: boolean;
   isRoot?: boolean;
+  provider?: string;
 };
+
+export type UpdateUserDto = {
+  password?: string;
+} & UserFilterDto;
 
 export type WhereUserParamsDto = {
   parameters: UserFilterDto;
