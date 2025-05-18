@@ -5,6 +5,7 @@ import { TypeOrmModule } from './database/config';
 import { UserModule } from './commons/users/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { GoogleModule } from './commons/google/google.module';
+import { FinanceModule } from './commons/finances/finance.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { GoogleModule } from './commons/google/google.module';
     TypeOrmModule,
     UserModule,
     GoogleModule,
+    FinanceModule,
   ],
   controllers: [],
   providers: [],

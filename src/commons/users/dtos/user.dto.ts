@@ -24,6 +24,12 @@ export type LoginDtoData = {
   user: userDataDto;
 };
 
+export type UserBalanceDto = {
+  incomeBalance?: number;
+  expenseBalance?: number;
+  receivedBalance?: number;
+};
+
 export type UserFilterDto = {
   id?: number;
   name?: string;
@@ -31,7 +37,7 @@ export type UserFilterDto = {
   isDeleted?: boolean;
   isRoot?: boolean;
   provider?: string;
-};
+} & UserBalanceDto;
 
 export type UpdateUserDto = {
   password?: string;

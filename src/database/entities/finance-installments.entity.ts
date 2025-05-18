@@ -45,12 +45,24 @@ export class FinanceInstallment {
   @Column({ default: false })
   isDeleted: boolean;
 
+  @Column({ nullable: true })
+  userId: number;
+
+  @Column({ nullable: true })
+  statusId: number;
+
+  @Column({ nullable: true })
+  paymentMethodId: number;
+
+  @Column({ nullable: true })
+  financeId: number;
+
   @OneToMany(() => User, (user) => user.id)
-  userId: User;
+  user: User;
 
   @OneToMany(() => FinanceStatus, (status) => status.id)
-  statusId: FinanceStatus;
+  status: FinanceStatus;
 
   @OneToMany(() => PaymentMethod, (method) => method.id)
-  paymentMethodId: PaymentMethod;
+  paymentMethod: PaymentMethod;
 }

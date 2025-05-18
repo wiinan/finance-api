@@ -1,0 +1,82 @@
+import { UserBalanceDto } from 'src/commons/users/dtos/user.dto';
+import { Finance } from 'src/database/entities';
+
+export type PercentageOptionsDto = {
+  value: number;
+  percentage: number;
+  precision?: number;
+};
+
+export type PixInfoDto = {
+  type?: string;
+  key?: string;
+  taxes?: number;
+  qrCode?: string;
+};
+
+export type PaymentLinkInfoDto = {
+  link?: string;
+  taxes?: number;
+};
+
+export type creditCardInfoDto = {
+  name: string;
+  titleName: string;
+  number: string;
+  cvv: string;
+  dueDate: string;
+  taxes: number;
+};
+
+export type FinanceInfosDto = {
+  creditCardInfo?: creditCardInfoDto;
+  pixInfo?: PixInfoDto;
+  paymentLinkInfo?: PaymentLinkInfoDto;
+};
+
+export type FinanceDto = {
+  id?: number;
+  price: number;
+  description: string;
+  competence: Date;
+  typeId: number;
+  statusId: number;
+  paymentMethodId: number;
+  userId: number;
+  liquidPrice?: number;
+  installments?: number;
+  receivedValue?: number;
+};
+
+export type AdditionalFinanceOptionsDto = {
+  taxes?: number;
+  installments?: number;
+  montlhyFee?: number;
+  recurrenceDays?: number;
+};
+
+export type RequestCreateFinanceDto = {
+  additionalOptions?: AdditionalFinanceOptionsDto;
+} & FinanceInfosDto &
+  FinanceDto;
+
+export type MetaFinanceParams = {
+  userId: number;
+};
+
+export type RequestCreateFinanceParamsDto = {
+  data: RequestCreateFinanceDto;
+};
+
+export type FinanceInstallmentsDto = {
+  installment: number;
+  financeId: number;
+} & FinanceDto;
+
+export type FinanceHandlerDto = {
+  finance: FinanceDto;
+  userBalance: UserBalanceDto;
+  additionalOptions?: AdditionalFinanceOptionsDto;
+  financeInstallments?: FinanceInstallmentsDto[];
+  newFinance?: Finance;
+} & FinanceInfosDto;

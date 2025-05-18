@@ -26,7 +26,13 @@ export class User {
   password: string;
 
   @Column({ type: 'decimal', default: 0 })
-  balance: number;
+  incomeBalance: number;
+
+  @Column({ type: 'decimal', default: 0 })
+  expenseBalance: number;
+
+  @Column({ type: 'decimal', default: 0 })
+  receivedBalance: number;
 
   @Column()
   @MaxLength(25)

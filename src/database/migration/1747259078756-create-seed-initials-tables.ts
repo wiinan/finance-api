@@ -35,7 +35,8 @@ export class CreateSeedInitialsTables1747259078756
             ('Pix'),
             ('Cartão'),
             ('Transferencia'),
-            ('Link de pagamento')`),
+            ('Link de pagamento'),
+            ('Parcelado')`),
     ]);
   }
 
