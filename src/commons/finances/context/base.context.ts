@@ -44,4 +44,8 @@ export class BaseContext implements IBaseContext {
 
     await Promise.all(promises);
   }
+
+  validateCreateFinance(): void {
+    return;
+  }
 }

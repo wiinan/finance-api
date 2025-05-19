@@ -12,6 +12,15 @@ export const PAYMENT_METHODS_TAXES = {
   [PAYMENT_METHODS.PAYMENT_LINK]: 0.03,
 };
 
+export const FINANCE_STATUS = {
+  OPEN: 1,
+  PAID: 2,
+  PARTIAL: 3,
+  CLOSED: 4,
+  CANCELED: 5,
+  REFUND: 6,
+};
+
 export const FINANCE_TYPES = {
   OUT: 1,
   INPUT: 2,

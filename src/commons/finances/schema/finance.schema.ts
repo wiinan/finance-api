@@ -12,7 +12,6 @@ export const CreateFinanceSchema = z
     description: ZOD_STRING_NULLABLE,
     competence: ZOD_STRING_REQUIRED,
     typeId: ZOD_NUMBER_REQUIRED,
-    statusId: ZOD_NUMBER_REQUIRED,
     paymentMethodId: ZOD_NUMBER_REQUIRED,
     userId: ZOD_NUMBER_REQUIRED,
     liquidPrice: ZOD_NUMBER_NULLABLE,
@@ -29,6 +28,24 @@ export const CreateFinanceSchema = z
       .object({
         taxes: ZOD_NUMBER_NULLABLE,
         link: ZOD_STRING_NULLABLE,
+      })
+      .optional(),
+    pixInfo: z
+      .object({
+        type: ZOD_STRING_NULLABLE,
+        key: ZOD_STRING_NULLABLE,
+        qrCode: ZOD_STRING_NULLABLE,
+        taxes: ZOD_NUMBER_NULLABLE,
+      })
+      .optional(),
+    creditCardInfo: z
+      .object({
+        cvv: ZOD_STRING_NULLABLE,
+        number: ZOD_STRING_NULLABLE,
+        titleName: ZOD_STRING_NULLABLE,
+        dueDate: ZOD_STRING_NULLABLE,
+        name: ZOD_STRING_NULLABLE,
+        taxes: ZOD_NUMBER_NULLABLE,
       })
       .optional(),
   })

@@ -12,6 +12,7 @@ export type PixInfoDto = {
   key?: string;
   taxes?: number;
   qrCode?: string;
+  userId?: number;
 };
 
 export type PaymentLinkInfoDto = {
@@ -20,12 +21,13 @@ export type PaymentLinkInfoDto = {
 };
 
 export type creditCardInfoDto = {
-  name: string;
-  titleName: string;
-  number: string;
-  cvv: string;
-  dueDate: string;
-  taxes: number;
+  name?: string;
+  titleName?: string;
+  number?: string;
+  cvv?: string;
+  dueDate?: string;
+  taxes?: number;
+  userId?: number;
 };
 
 export type FinanceInfosDto = {

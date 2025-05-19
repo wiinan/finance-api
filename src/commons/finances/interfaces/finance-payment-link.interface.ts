@@ -1,5 +1,5 @@
-import { PixInfoDto } from '../dtos/finance.dto';
+import { PaymentLinkInfoDto } from '../dtos/finance.dto';
 
 export abstract class IFinancePaymentLinkService {
-  abstract createPaymentLink(data: PixInfoDto): Promise<void>;
+  abstract createPaymentLink(data: PaymentLinkInfoDto): Promise<void>;
 }

@@ -46,4 +46,8 @@ export class BaseStrategy implements IBaseStrategy {
       financeHandler,
     );
   }
+
+  validateCreateFinance(): void {
+    this.strategy.validateCreateFinance(this.data);
+  }
 }

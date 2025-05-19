@@ -10,4 +10,5 @@ export abstract class IBaseContext {
     transactionalEntityManager: EntityManager,
     financeHandler: FinanceHandlerDto,
   ): Promise<void>;
+  abstract validateCreateFinance(data: RequestCreateFinanceDto): void;
 }

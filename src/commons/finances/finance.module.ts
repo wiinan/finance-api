@@ -5,9 +5,19 @@ import {
   IBaseStrategy,
   IFinanceService,
   IInstallmentService,
+  IFinancePixService,
+  IFinancePaymentLinkService,
+  IFinanceCreditcardService,
 } from './interfaces';
-import { FinanceService, InstallmentService } from './services';
 import {
+  FinanceService,
+  InstallmentService,
+  FinancePixService,
+  FinancePaymentLinkService,
+  FinanceCreditcardService,
+} from './services';
+import {
+  CreditCardFinanceInfo,
   Finance,
   FinanceInstallment,
   PaymentLinkFinanceInfo,
@@ -15,8 +25,6 @@ import {
 } from 'src/database/entities';
 import { CreateFinanceChain } from './chain';
 import { BaseStrategy } from './context/base.strategy';
-import { IFinancePaymentLinkService } from './interfaces/finance-payment-link.interface';
-import { FinancePaymentLinkService } from './services/finance-payment-link.service';
 
 @Module({
   imports: [
@@ -25,11 +33,14 @@ import { FinancePaymentLinkService } from './services/finance-payment-link.servi
       FinanceInstallment,
       PixFinanceInfo,
       PaymentLinkFinanceInfo,
+      CreditCardFinanceInfo,
     ]),
   ],
   controllers: [FinanceController],
   providers: [
     { provide: IFinanceService, useClass: FinanceService },
+    { provide: IFinancePixService, useClass: FinancePixService },
+    { provide: IFinanceCreditcardService, useClass: FinanceCreditcardService },
     {
       provide: IFinancePaymentLinkService,
       useClass: FinancePaymentLinkService,

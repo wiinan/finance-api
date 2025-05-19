@@ -12,6 +12,8 @@ import { FinanceHelper } from '../helpers/finance.helpers';
 import { EntityManager } from 'typeorm';
 import { FinanceService, InstallmentService } from '../services';
 import { Finance, FinanceInstallment } from 'src/database/entities';
+import { HttpException, HttpStatus } from '@nestjs/common';
+import { PAYMENT_METHODS } from 'src/constants/finance.constants';
 
 export class InstallmentContext implements IBaseContext {
   private financeService: IFinanceService;
@@ -35,13 +37,6 @@ export class InstallmentContext implements IBaseContext {
       additionalOptions: data.additionalOptions,
       userBalance: FinanceHelper.getBalenceProps(finance),
     };
-
-    if (data.additionalOptions) {
-      options.financeInstallments = FinanceHelper.mountFinanceInstallments(
-        options.finance,
-        data.additionalOptions,
-      );
-    }
 
     return options;
   }
@@ -68,6 +63,18 @@ export class InstallmentContext implements IBaseContext {
       );
 
       await this.installmentService.createInstallment(financeInstallments);
+    }
+  }
+
+  validateCreateFinance(data: RequestCreateFinanceDto): void {
+    const { additionalOptions } = data;
+
+    if (
+      data.paymentMethodId !== PAYMENT_METHODS.INSTALLMENT ||
+      !data.installments ||
+      !additionalOptions?.installments
+    ) {
+      throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
     }
   }
 }

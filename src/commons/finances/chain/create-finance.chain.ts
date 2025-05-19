@@ -7,6 +7,7 @@ import { UserBalanceDto } from 'src/commons/users/dtos/user.dto';
 import { UserService } from 'src/commons/users/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { IUserService } from 'src/commons/users/interfaces/user.interface';
+import { FINANCE_STATUS } from 'src/constants/finance.constants';
 
 @Injectable()
 export class CreateFinanceChain {
@@ -14,8 +15,25 @@ export class CreateFinanceChain {
 
   constructor(private readonly dataSource: DataSource) {}
 
+  private async updateUserBalance(
+    userId: number,
+    userBalance: UserBalanceDto,
+    transactionalEntityManager: EntityManager,
+  ): Promise<void> {
+    const userModule = transactionalEntityManager.getRepository(User);
+    this.userService = new UserService(userModule, new JwtService());
+
+    await this.userService.updateUserBalance({ id: userId }, userBalance);
+  }
+
   public async run(options: RequestCreateFinanceDto): Promise<Finance> {
-    const strategyContext = new BaseStrategy(options);
+    const strategyContext = new BaseStrategy({
+      ...options,
+      statusId: FINANCE_STATUS.OPEN,
+    });
+
+    strategyContext.validateCreateFinance();
+
     const financeHandler = strategyContext.mountFinanceData();
 
     await this.dataSource.transaction(async (transactionalEntityManager) => {
@@ -33,16 +51,5 @@ export class CreateFinanceChain {
     });
 
     return financeHandler.newFinance as Finance;
-  }
-
-  private async updateUserBalance(
-    userId: number,
-    userBalance: UserBalanceDto,
-    transactionalEntityManager: EntityManager,
-  ): Promise<void> {
-    const userModule = transactionalEntityManager.getRepository(User);
-    this.userService = new UserService(userModule, new JwtService());
-
-    await this.userService.updateUserBalance({ id: userId }, userBalance);
   }
 }

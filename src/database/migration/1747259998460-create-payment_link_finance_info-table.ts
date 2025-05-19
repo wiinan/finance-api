@@ -29,6 +29,7 @@ export class CreatePaymentLinkFinanceInfoTable1747259998460
             scale: 4,
           },
           { name: 'financeId', type: 'int', isNullable: false },
+          { name: 'userId', type: 'int', isNullable: false },
           {
             name: 'createdAt',
             type: 'timestamp',
@@ -51,15 +52,26 @@ export class CreatePaymentLinkFinanceInfoTable1747259998460
       }),
     );
 
-    await queryRunner.createForeignKey(
-      'payment_link_finance_info',
-      new TableForeignKey({
-        columnNames: ['financeId'],
-        referencedColumnNames: ['id'],
-        referencedTableName: 'finances',
-        onDelete: 'CASCADE',
-      }),
-    );
+    await Promise.all([
+      await queryRunner.createForeignKey(
+        'payment_link_finance_info',
+        new TableForeignKey({
+          columnNames: ['financeId'],
+          referencedColumnNames: ['id'],
+          referencedTableName: 'finances',
+          onDelete: 'CASCADE',
+        }),
+      ),
+      await queryRunner.createForeignKey(
+        'payment_link_finance_info',
+        new TableForeignKey({
+          columnNames: ['userId'],
+          referencedColumnNames: ['id'],
+          referencedTableName: 'users',
+          onDelete: 'CASCADE',
+        }),
+      ),
+    ]);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

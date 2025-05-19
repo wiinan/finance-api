@@ -3,6 +3,7 @@ import { FinanceHandlerDto } from '../dtos/finance.dto';
 
 export abstract class IBaseStrategy {
   abstract mountFinanceData(): FinanceHandlerDto;
+  abstract validateCreateFinance(): void;
   abstract executeTransactions(
     transactionalEntityManager: EntityManager,
     financeHandler: FinanceHandlerDto,

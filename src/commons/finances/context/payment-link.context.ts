@@ -10,6 +10,8 @@ import { FinanceService } from '../services';
 import { Finance, PaymentLinkFinanceInfo } from 'src/database/entities';
 import { FinancePaymentLinkService } from '../services/finance-payment-link.service';
 import { IFinancePaymentLinkService } from '../interfaces/finance-payment-link.interface';
+import { PAYMENT_METHODS } from 'src/constants/finance.constants';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 export class PaymentLinkContext implements IBaseContext {
   private financeService: IFinanceService;
@@ -53,6 +55,17 @@ export class PaymentLinkContext implements IBaseContext {
       );
 
       await this.financePaymentLinkService.createPaymentLink(paymentLinkData);
+    }
+  }
+
+  validateCreateFinance(data: RequestCreateFinanceDto): void {
+    const { paymentLinkInfo } = data;
+
+    if (
+      data.paymentMethodId !== PAYMENT_METHODS.PAYMENT_LINK ||
+      !paymentLinkInfo
+    ) {
+      throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
     }
   }
 }
