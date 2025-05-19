@@ -1,0 +1,27 @@
+export const PAYMENT_METHODS = {
+  PIX: 1,
+  CREDIT_CARD: 2,
+  TRANFER: 3,
+  PAYMENT_LINK: 4,
+  INSTALLMENT: 6, // Atualiza par o id 5
+};
+
+export const PAYMENT_METHODS_TAXES = {
+  [PAYMENT_METHODS.PIX]: 0.01,
+  [PAYMENT_METHODS.CREDIT_CARD]: 0.02,
+  [PAYMENT_METHODS.PAYMENT_LINK]: 0.03,
+};
+
+export const FINANCE_STATUS = {
+  OPEN: 1,
+  PAID: 2,
+  PARTIAL: 3,
+  CLOSED: 4,
+  CANCELED: 5,
+  REFUND: 6,
+};
+
+export const FINANCE_TYPES = {
+  OUT: 1,
+  INPUT: 2,
+};

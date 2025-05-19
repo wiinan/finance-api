@@ -30,6 +30,12 @@ export class CreditCardFinanceInfo {
   @MaxLength(7)
   dueDate: string;
 
+  @Column({ nullable: false })
+  financeId: number;
+
+  @Column({ nullable: false })
+  userId: number;
+
   @Column({ default: new Date() })
   createdAt: Date;
 
@@ -40,8 +46,8 @@ export class CreditCardFinanceInfo {
   isDeleted: boolean;
 
   @OneToMany(() => User, (user) => user.id)
-  userId: User;
+  user: User;
 
   @OneToMany(() => Finance, (finance) => finance.id)
-  financeId: Finance;
+  finance: Finance;
 }

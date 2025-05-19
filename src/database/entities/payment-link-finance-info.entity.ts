@@ -21,6 +21,9 @@ export class PaymentLinkFinanceInfo {
   @Column({ default: false })
   isDeleted: boolean;
 
+  @Column({ nullable: false })
+  financeId: number;
+
   @OneToMany(() => Finance, (finance) => finance.id)
-  financeId: Finance;
+  finance: Finance;
 }

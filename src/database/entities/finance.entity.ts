@@ -42,15 +42,27 @@ export class Finance {
   @Column({ default: false })
   isDeleted: boolean;
 
+  @Column({ nullable: false })
+  userId: number;
+
+  @Column({ nullable: false })
+  statusId: number;
+
+  @Column({ nullable: false })
+  typeId: number;
+
+  @Column({ nullable: false })
+  paymentMethodId: number;
+
   @OneToMany(() => User, (user) => user.id)
-  userId: User;
+  user: User;
 
   @OneToMany(() => FinanceStatus, (status) => status.id)
-  statusId: FinanceStatus;
+  financeStatus: FinanceStatus;
 
   @OneToMany(() => Types, (type) => type.id)
-  typeId: Types;
+  type: Types;
 
   @OneToMany(() => PaymentMethod, (method) => method.id)
-  paymentMethodId: PaymentMethod;
+  paymentMethod: PaymentMethod;
 }
