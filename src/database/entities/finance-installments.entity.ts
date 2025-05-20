@@ -1,6 +1,12 @@
 import { MaxLength } from 'class-validator';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { FinanceStatus, PaymentMethod, User } from './';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Finance, FinanceStatus, PaymentMethod, User } from './';
 
 @Entity('finance_installments')
 export class FinanceInstallment {
@@ -45,12 +51,29 @@ export class FinanceInstallment {
   @Column({ default: false })
   isDeleted: boolean;
 
-  @OneToMany(() => User, (user) => user.id)
-  userId: User;
+  @Column({ nullable: true })
+  userId: number;
 
-  @OneToMany(() => FinanceStatus, (status) => status.id)
-  statusId: FinanceStatus;
+  @Column({ nullable: true })
+  statusId: number;
 
-  @OneToMany(() => PaymentMethod, (method) => method.id)
-  paymentMethodId: PaymentMethod;
+  @Column({ nullable: true })
+  paymentMethodId: number;
+
+  @Column({ nullable: true })
+  financeId: number;
+
+  @ManyToOne(() => User, (user) => user.id)
+  user: User;
+
+  @ManyToOne(() => FinanceStatus, (status) => status.id)
+  @JoinColumn({ name: 'statusId' })
+  financeStatus: FinanceStatus;
+
+  @ManyToOne(() => PaymentMethod, (method) => method.id)
+  paymentMethod: PaymentMethod;
+
+  @ManyToOne(() => Finance)
+  @JoinColumn({ name: 'financeId', referencedColumnName: 'id' })
+  finance: Finance;
 }

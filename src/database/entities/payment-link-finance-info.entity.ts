@@ -1,4 +1,10 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Finance } from '.';
 
 @Entity('payment_link_finance_info')
@@ -21,6 +27,10 @@ export class PaymentLinkFinanceInfo {
   @Column({ default: false })
   isDeleted: boolean;
 
-  @OneToMany(() => Finance, (finance) => finance.id)
-  financeId: Finance;
+  @Column({ nullable: false })
+  financeId: number;
+
+  @ManyToOne(() => Finance)
+  @JoinColumn({ name: 'financeId', referencedColumnName: 'id' })
+  finance: Finance;
 }

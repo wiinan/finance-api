@@ -14,7 +14,7 @@ export const CreateUserSchema = z
     confirmPassword: ZOD_STRING_REQUIRED,
   })
   .strip()
-  .superRefine(({ password, confirmPassword }) => password === confirmPassword);
+  .refine(({ password, confirmPassword }) => password === confirmPassword);
 
 export const FindAllUserSchema = z
   .object({

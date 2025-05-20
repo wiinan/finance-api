@@ -1,4 +1,11 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Finance, User } from './';
 import { MaxLength } from 'class-validator';
 
@@ -42,6 +49,7 @@ export class CreditCardFinanceInfo {
   @OneToMany(() => User, (user) => user.id)
   userId: User;
 
-  @OneToMany(() => Finance, (finance) => finance.id)
-  financeId: Finance;
+  @ManyToOne(() => Finance)
+  @JoinColumn({ name: 'financeId', referencedColumnName: 'id' })
+  finance: Finance;
 }

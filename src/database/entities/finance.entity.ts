@@ -1,6 +1,23 @@
 import { MaxLength } from 'class-validator';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { FinanceStatus, PaymentMethod, Types, User } from './';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import {
+  CreditCardFinanceInfo,
+  FinanceInstallment,
+  FinanceStatus,
+  PaymentLinkFinanceInfo,
+  PaymentMethod,
+  PixFinanceInfo,
+  Types,
+  User,
+} from './';
 
 @Entity('finances')
 export class Finance {
@@ -42,15 +59,40 @@ export class Finance {
   @Column({ default: false })
   isDeleted: boolean;
 
-  @OneToMany(() => User, (user) => user.id)
-  userId: User;
+  @Column({ nullable: false })
+  userId: number;
 
-  @OneToMany(() => FinanceStatus, (status) => status.id)
-  statusId: FinanceStatus;
+  @Column({ nullable: false })
+  statusId: number;
 
-  @OneToMany(() => Types, (type) => type.id)
-  typeId: Types;
+  @Column({ nullable: false })
+  typeId: number;
 
-  @OneToMany(() => PaymentMethod, (method) => method.id)
-  paymentMethodId: PaymentMethod;
+  @Column({ nullable: false })
+  paymentMethodId: number;
+
+  @ManyToOne(() => User, (user) => user.id)
+  user: User;
+
+  @ManyToOne(() => FinanceStatus, (status) => status.id)
+  @JoinColumn({ name: 'statusId' })
+  financeStatus: FinanceStatus;
+
+  @ManyToOne(() => Types, (type) => type.id)
+  type: Types;
+
+  @ManyToOne(() => PaymentMethod, (method) => method.id)
+  paymentMethod: PaymentMethod;
+
+  @OneToMany(() => FinanceInstallment, (installment) => installment.finance)
+  installment: FinanceInstallment[];
+
+  @OneToOne(() => PixFinanceInfo, (pixInfo) => pixInfo.finance)
+  pixInfo: PixFinanceInfo;
+
+  @OneToOne(() => CreditCardFinanceInfo, (creditCard) => creditCard.finance)
+  creditCardInfo: CreditCardFinanceInfo;
+
+  @OneToOne(() => PaymentLinkFinanceInfo, (paymentLink) => paymentLink.finance)
+  paymentLinkInfo: PaymentLinkFinanceInfo;
 }
