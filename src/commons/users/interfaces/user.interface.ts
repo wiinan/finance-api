@@ -16,4 +16,8 @@ export abstract class IUserService {
   abstract update(filter: UserParamsDto, data: UpdateUserDto): Promise<boolean>;
   abstract delete(filter: UserParamsDto): Promise<boolean>;
   abstract isAdmin(id: number): Promise<number>;
+  abstract updateUserBalance(
+    filter: UserParamsDto,
+    data: UpdateUserDto,
+  ): Promise<void>;
 }

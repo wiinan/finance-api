@@ -5,13 +5,11 @@ import {
   TableForeignKey,
 } from 'typeorm';
 
-export class CreatePaymentLinkFinanceInfoTable1747259998460
-  implements MigrationInterface
-{
+export class CreateUserLogsTable1747365395345 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'payment_link_finance_info',
+        name: 'user_logs',
         columns: [
           {
             name: 'id',
@@ -20,52 +18,55 @@ export class CreatePaymentLinkFinanceInfoTable1747259998460
             isGenerated: true,
             generationStrategy: 'increment',
           },
-          { name: 'link', type: 'text', isNullable: false },
           {
-            name: 'taxes',
-            type: 'decimal',
+            name: 'userId',
+            type: 'int',
             isNullable: false,
-            default: 0,
-            scale: 4,
           },
-          { name: 'financeId', type: 'int', isNullable: false },
-          { name: 'userId', type: 'int', isNullable: false },
+          {
+            name: 'editorId',
+            type: 'int',
+            isNullable: false,
+          },
+          {
+            name: 'action',
+            type: 'varchar(25)',
+            isNullable: false,
+          },
           {
             name: 'createdAt',
             type: 'timestamp',
-            isNullable: false,
             default: 'now()',
+            isNullable: false,
           },
           {
-            name: 'updatedAt',
-            type: 'timestamp',
-            isNullable: false,
-            default: 'now()',
+            name: 'new_options',
+            type: 'json',
+            isNullable: true,
           },
           {
-            name: 'isDeleted',
-            type: 'boolean',
-            isNullable: false,
-            default: false,
+            name: 'old_options',
+            type: 'json',
+            isNullable: true,
           },
         ],
       }),
     );
 
     await Promise.all([
-      await queryRunner.createForeignKey(
-        'payment_link_finance_info',
+      queryRunner.createForeignKey(
+        'user_logs',
         new TableForeignKey({
-          columnNames: ['financeId'],
+          columnNames: ['userId'],
           referencedColumnNames: ['id'],
-          referencedTableName: 'finances',
+          referencedTableName: 'users',
           onDelete: 'CASCADE',
         }),
       ),
-      await queryRunner.createForeignKey(
-        'payment_link_finance_info',
+      queryRunner.createForeignKey(
+        'user_logs',
         new TableForeignKey({
-          columnNames: ['userId'],
+          columnNames: ['editorId'],
           referencedColumnNames: ['id'],
           referencedTableName: 'users',
           onDelete: 'CASCADE',
@@ -75,6 +76,6 @@ export class CreatePaymentLinkFinanceInfoTable1747259998460
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('payment_link_finance_info');
+    await queryRunner.dropTable('user_logs');
   }
 }

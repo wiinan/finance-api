@@ -28,6 +28,12 @@ export class PixFinanceInfo {
   @Column({ type: 'decimal', default: 0, scale: 4 })
   taxes: number;
 
+  @Column({ nullable: false })
+  financeId: number;
+
+  @Column({ nullable: false })
+  userId: number;
+
   @Column({ default: new Date() })
   createdAt: Date;
 
@@ -38,7 +44,7 @@ export class PixFinanceInfo {
   isDeleted: boolean;
 
   @OneToMany(() => User, (user) => user.id)
-  userId: User;
+  user: User;
 
   @ManyToOne(() => Finance)
   @JoinColumn({ name: 'financeId', referencedColumnName: 'id' })

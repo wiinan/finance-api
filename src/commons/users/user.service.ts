@@ -40,10 +40,10 @@ export class UserService implements IUserService {
     return newUser;
   }
 
-  public async findAll(filter?: UserFilterDto): Promise<userDataDto[]> {
+  public async findAll(filter?: UserFilterDto): Promise<User[]> {
     const { query, parameters } = UserHelper.getWhereParams(filter);
 
-    const users: userDataDto[] = await this.userModel
+    const users: User[] = await this.userModel
       .createQueryBuilder()
       .select('*')
       .where(query, parameters)
@@ -69,9 +69,10 @@ export class UserService implements IUserService {
       throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
     }
 
-    const token = await this.jwtService.signAsync(
-      pick(user, ['id', 'name', 'email', 'isRoot']),
-    );
+    const token = await this.jwtService.signAsync({
+      ...pick(user, ['name', 'email', 'isRoot']),
+      userId: user.id,
+    });
 
     return { user, token };
   }
@@ -109,7 +110,17 @@ export class UserService implements IUserService {
     await this.userModel
       .createQueryBuilder()
       .update(User)
-      .set(pick(data, ['name', 'isRoot', 'password', 'isDeleted']))
+      .set(
+        pick(data, [
+          'name',
+          'isRoot',
+          'password',
+          'isDeleted',
+          'incomeBalance',
+          'expenseBalance',
+          'receivedBalance',
+        ]),
+      )
       .where('id = :id', { id })
       .execute();
 
@@ -130,5 +141,16 @@ export class UserService implements IUserService {
         isRoot: true,
       },
     });
+  }
+
+  public async updateUserBalance(
+    filter: UserParamsDto,
+    data: UpdateUserDto,
+  ): Promise<void> {
+    const user = await this.findAll({ id: filter.id });
+    const userData = (user && user[0]) || {};
+    const balanceData = UserHelper.calculateBalances(userData, data);
+
+    await this.update(filter, balanceData);
   }
 }

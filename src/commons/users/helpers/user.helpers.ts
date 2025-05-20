@@ -1,4 +1,10 @@
-import { UserFilterDto, WhereUserParamsDto } from '../dtos/user.dto';
+import { User } from 'src/database/entities';
+import {
+  UserBalanceDto,
+  UserFilterDto,
+  WhereUserParamsDto,
+} from '../dtos/user.dto';
+import { CalculateUtils } from 'src/helpers/calculate';
 
 export class UserHelper {
   private static getConcatQuery(hasInitialFilter: boolean): string {
@@ -47,5 +53,22 @@ export class UserHelper {
     }
 
     return options;
+  }
+
+  public static calculateBalances(
+    user: User,
+    balance: UserBalanceDto,
+  ): UserBalanceDto {
+
+    return Object.keys(balance).reduce((acc, key: string) => {
+      if (!balance[key]) {
+        return acc;
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      acc[key] = CalculateUtils.sumValues([user[key], balance[key]]);
+
+      return acc;
+    }, user);
   }
 }
