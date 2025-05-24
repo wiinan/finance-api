@@ -26,7 +26,8 @@ export class CreateSeedInitialsTables1747259078756
             ('PARTIAL'),
             ('CLOSED'),
             ('CANCELED'),
-            ('REFUND')`,
+            ('REFUND'),
+            ('PROCESSING')`,
       ),
       queryRunner.query(`
         INSERT INTO

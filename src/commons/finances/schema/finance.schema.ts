@@ -1,10 +1,41 @@
 import {
+  ZOD_DATE_REQUIRED,
   ZOD_NUMBER_NULLABLE,
+  ZOD_NUMBER_PARAMS,
   ZOD_NUMBER_REQUIRED,
   ZOD_STRING_NULLABLE,
+  ZOD_STRING_PARSE_TO_NUMBER,
   ZOD_STRING_REQUIRED,
 } from 'src/helpers/zod.helpers';
 import { z } from 'zod';
+import { Utils } from 'src/helpers/utils';
+
+export const ListFinanceSchema = z
+  .object({
+    startDate: ZOD_DATE_REQUIRED,
+    endDate: ZOD_DATE_REQUIRED,
+    typeId: ZOD_STRING_PARSE_TO_NUMBER,
+    statusId: ZOD_STRING_PARSE_TO_NUMBER,
+    paymentMethodId: ZOD_STRING_PARSE_TO_NUMBER,
+    userId: ZOD_STRING_PARSE_TO_NUMBER,
+    description: ZOD_STRING_NULLABLE,
+  })
+  .strip()
+  .refine(({ startDate, endDate }) =>
+    Utils.validateDateSchema({ startDate, endDate }),
+  );
+
+export const FilterFinanceSchema = z.object({
+  id: ZOD_NUMBER_PARAMS,
+});
+
+export const PayFinanceBodySchema = z
+  .object({
+    receivedValue: ZOD_NUMBER_REQUIRED,
+    payerInfo: ZOD_STRING_NULLABLE,
+    installment: ZOD_NUMBER_NULLABLE,
+  })
+  .strip();
 
 export const CreateFinanceSchema = z
   .object({

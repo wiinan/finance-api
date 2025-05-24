@@ -1,6 +1,12 @@
 import { MaxLength } from 'class-validator';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { FinanceStatus, PaymentMethod, User } from './';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Finance, FinanceStatus, PaymentMethod, User } from './';
 
 @Entity('finance_installments')
 export class FinanceInstallment {
@@ -57,12 +63,17 @@ export class FinanceInstallment {
   @Column({ nullable: true })
   financeId: number;
 
-  @OneToMany(() => User, (user) => user.id)
+  @ManyToOne(() => User, (user) => user.id)
   user: User;
 
-  @OneToMany(() => FinanceStatus, (status) => status.id)
-  status: FinanceStatus;
+  @ManyToOne(() => FinanceStatus, (status) => status.id)
+  @JoinColumn({ name: 'statusId' })
+  financeStatus: FinanceStatus;
 
-  @OneToMany(() => PaymentMethod, (method) => method.id)
+  @ManyToOne(() => PaymentMethod, (method) => method.id)
   paymentMethod: PaymentMethod;
+
+  @ManyToOne(() => Finance)
+  @JoinColumn({ name: 'financeId', referencedColumnName: 'id' })
+  finance: Finance;
 }

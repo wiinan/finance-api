@@ -3,7 +3,7 @@ import {
   FinanceHandlerDto,
   RequestCreateFinanceDto,
 } from '../dtos/finance.dto';
-import { FinanceHelper } from '../helpers/finance.helpers';
+import { CreateFinanceHelper } from '../helpers/create-finance.helpers';
 import {
   IBaseContext,
   IFinanceService,
@@ -23,11 +23,14 @@ import {
 } from 'src/database/entities';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { PAYMENT_METHODS } from 'src/constants/finance.constants';
+import { QueueProducerService } from 'src/workers/producer-queue';
 
 export class PixContext implements IBaseContext {
   private financeService: IFinanceService;
   private financePixService: IFinancePixService;
   private installmentService: IInstallmentService;
+
+  constructor(private readonly payTransactionQueue?: QueueProducerService) {}
 
   mountFinanceData(data: RequestCreateFinanceDto): FinanceHandlerDto {
     const { additionalOptions, pixInfo } = data;
@@ -40,19 +43,20 @@ export class PixContext implements IBaseContext {
       value: data.price,
       percentage: totalTaxes,
     });
-    const finance = FinanceHelper.normalizeFinanceData(data, liquidPrice);
+    const finance = CreateFinanceHelper.normalizeFinanceData(data, liquidPrice);
 
     const options: FinanceHandlerDto = {
       finance,
       pixInfo: { ...pixInfo, userId: data.userId },
-      userBalance: FinanceHelper.getBalenceProps(finance),
+      userBalance: CreateFinanceHelper.getBalenceProps(finance),
     };
 
     if (additionalOptions?.installments) {
-      options.financeInstallments = FinanceHelper.mountFinanceInstallments(
-        options.finance,
-        additionalOptions,
-      );
+      options.financeInstallments =
+        CreateFinanceHelper.mountFinanceInstallments(
+          options.finance,
+          additionalOptions,
+        );
     }
 
     return options;
@@ -75,7 +79,7 @@ export class PixContext implements IBaseContext {
     const promises: Promise<any>[] = [];
 
     if (financeHandler.pixInfo) {
-      const pixData = FinanceHelper.mountFinanceInfoData(
+      const pixData = CreateFinanceHelper.mountFinanceInfoData(
         financeHandler.pixInfo,
         financeHandler.newFinance.id,
       );
@@ -84,7 +88,7 @@ export class PixContext implements IBaseContext {
     }
 
     if (financeHandler.additionalOptions) {
-      const financeInstallments = FinanceHelper.mountFinanceInstallments(
+      const financeInstallments = CreateFinanceHelper.mountFinanceInstallments(
         financeHandler.newFinance,
         financeHandler.additionalOptions,
       );
@@ -107,4 +111,14 @@ export class PixContext implements IBaseContext {
       throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
     }
   }
+
+  validatePayFinance(currentFinance: Finance): void {
+    if (!currentFinance) {
+      throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  mountFinancePayData;
+  executePayTransactions;
+  savePayFinances;
 }

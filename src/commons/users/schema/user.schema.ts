@@ -1,6 +1,7 @@
 import {
   ZOD_BOOLEAN_DEFAULT_FALSE,
   ZOD_NUMBER_NULLABLE,
+  ZOD_NUMBER_PARAMS,
   ZOD_STRING_NULLABLE,
   ZOD_STRING_REQUIRED,
 } from 'src/helpers/zod.helpers';
@@ -14,7 +15,7 @@ export const CreateUserSchema = z
     confirmPassword: ZOD_STRING_REQUIRED,
   })
   .strip()
-  .superRefine(({ password, confirmPassword }) => password === confirmPassword);
+  .refine(({ password, confirmPassword }) => password === confirmPassword);
 
 export const FindAllUserSchema = z
   .object({
@@ -33,6 +34,4 @@ export const LoginUserSchema = z
   })
   .strip();
 
-export const FilterUserSchema = z
-  .object({ id: z.string().transform(Number) })
-  .strip();
+export const FilterUserSchema = z.object({ id: ZOD_NUMBER_PARAMS }).strip();

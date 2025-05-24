@@ -4,7 +4,7 @@ import {
   RequestCreateFinanceDto,
 } from '../dtos/finance.dto';
 import { IBaseContext, IFinanceService } from '../interfaces';
-import { FinanceHelper } from '../helpers/finance.helpers';
+import { CreateFinanceHelper } from '../helpers/create-finance.helpers';
 import { EntityManager } from 'typeorm';
 import { FinanceService } from '../services';
 import { Finance, PaymentLinkFinanceInfo } from 'src/database/entities';
@@ -12,10 +12,13 @@ import { FinancePaymentLinkService } from '../services/finance-payment-link.serv
 import { IFinancePaymentLinkService } from '../interfaces/finance-payment-link.interface';
 import { PAYMENT_METHODS } from 'src/constants/finance.constants';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { QueueProducerService } from 'src/workers/producer-queue';
 
 export class PaymentLinkContext implements IBaseContext {
   private financeService: IFinanceService;
   private financePaymentLinkService: IFinancePaymentLinkService;
+
+  constructor(private readonly payTransactionQueue?: QueueProducerService) {}
 
   mountFinanceData(data: RequestCreateFinanceDto): FinanceHandlerDto {
     const { paymentLinkInfo } = data;
@@ -24,12 +27,12 @@ export class PaymentLinkContext implements IBaseContext {
       value: data.price,
       percentage: paymentLinkInfo?.taxes || 0,
     });
-    const finance = FinanceHelper.normalizeFinanceData(data, liquidPrice);
+    const finance = CreateFinanceHelper.normalizeFinanceData(data, liquidPrice);
 
     return {
       finance,
       paymentLinkInfo,
-      userBalance: FinanceHelper.getBalenceProps(finance),
+      userBalance: CreateFinanceHelper.getBalenceProps(finance),
     };
   }
 
@@ -49,7 +52,7 @@ export class PaymentLinkContext implements IBaseContext {
     );
 
     if (financeHandler.paymentLinkInfo) {
-      const paymentLinkData = FinanceHelper.mountFinanceInfoData(
+      const paymentLinkData = CreateFinanceHelper.mountFinanceInfoData(
         financeHandler.paymentLinkInfo,
         financeHandler.newFinance.id,
       );
@@ -68,4 +71,14 @@ export class PaymentLinkContext implements IBaseContext {
       throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
     }
   }
+
+  validatePayFinance(currentFinance: Finance): void {
+    if (!currentFinance) {
+      throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  mountFinancePayData;
+  executePayTransactions;
+  savePayFinances;
 }

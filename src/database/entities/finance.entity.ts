@@ -1,6 +1,23 @@
 import { MaxLength } from 'class-validator';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { FinanceStatus, PaymentMethod, Types, User } from './';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import {
+  CreditCardFinanceInfo,
+  FinanceInstallment,
+  FinanceStatus,
+  PaymentLinkFinanceInfo,
+  PaymentMethod,
+  PixFinanceInfo,
+  Types,
+  User,
+} from './';
 
 @Entity('finances')
 export class Finance {
@@ -54,15 +71,28 @@ export class Finance {
   @Column({ nullable: false })
   paymentMethodId: number;
 
-  @OneToMany(() => User, (user) => user.id)
+  @ManyToOne(() => User, (user) => user.id)
   user: User;
 
-  @OneToMany(() => FinanceStatus, (status) => status.id)
+  @ManyToOne(() => FinanceStatus, (status) => status.id)
+  @JoinColumn({ name: 'statusId' })
   financeStatus: FinanceStatus;
 
-  @OneToMany(() => Types, (type) => type.id)
+  @ManyToOne(() => Types, (type) => type.id)
   type: Types;
 
-  @OneToMany(() => PaymentMethod, (method) => method.id)
+  @ManyToOne(() => PaymentMethod, (method) => method.id)
   paymentMethod: PaymentMethod;
+
+  @OneToMany(() => FinanceInstallment, (installment) => installment.finance)
+  installment: FinanceInstallment[];
+
+  @OneToOne(() => PixFinanceInfo, (pixInfo) => pixInfo.finance)
+  pixInfo: PixFinanceInfo;
+
+  @OneToOne(() => CreditCardFinanceInfo, (creditCard) => creditCard.finance)
+  creditCardInfo: CreditCardFinanceInfo;
+
+  @OneToOne(() => PaymentLinkFinanceInfo, (paymentLink) => paymentLink.finance)
+  paymentLinkInfo: PaymentLinkFinanceInfo;
 }

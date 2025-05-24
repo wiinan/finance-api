@@ -8,16 +8,19 @@ import {
   IInstallmentService,
 } from '../interfaces';
 import { CalculateUtils } from 'src/helpers/calculate';
-import { FinanceHelper } from '../helpers/finance.helpers';
+import { CreateFinanceHelper } from '../helpers/create-finance.helpers';
 import { EntityManager } from 'typeorm';
 import { FinanceService, InstallmentService } from '../services';
 import { Finance, FinanceInstallment } from 'src/database/entities';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { PAYMENT_METHODS } from 'src/constants/finance.constants';
+import { QueueProducerService } from 'src/workers/producer-queue';
 
 export class InstallmentContext implements IBaseContext {
   private financeService: IFinanceService;
   private installmentService: IInstallmentService;
+
+  constructor(private readonly payTransactionQueue?: QueueProducerService) {}
 
   mountFinanceData(data: RequestCreateFinanceDto): FinanceHandlerDto {
     const { additionalOptions } = data;
@@ -26,7 +29,7 @@ export class InstallmentContext implements IBaseContext {
       value: data.price,
       percentage: additionalOptions?.taxes || 0,
     });
-    const finance = FinanceHelper.normalizeFinanceData(
+    const finance = CreateFinanceHelper.normalizeFinanceData(
       data,
       liquidPrice,
       additionalOptions?.installments,
@@ -35,7 +38,7 @@ export class InstallmentContext implements IBaseContext {
     const options: FinanceHandlerDto = {
       finance,
       additionalOptions: data.additionalOptions,
-      userBalance: FinanceHelper.getBalenceProps(finance),
+      userBalance: CreateFinanceHelper.getBalenceProps(finance),
     };
 
     return options;
@@ -57,7 +60,7 @@ export class InstallmentContext implements IBaseContext {
     );
 
     if (financeHandler.additionalOptions) {
-      const financeInstallments = FinanceHelper.mountFinanceInstallments(
+      const financeInstallments = CreateFinanceHelper.mountFinanceInstallments(
         financeHandler.newFinance,
         financeHandler.additionalOptions,
       );
@@ -77,4 +80,14 @@ export class InstallmentContext implements IBaseContext {
       throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
     }
   }
+
+  validatePayFinance(currentFinance: Finance): void {
+    if (!currentFinance) {
+      throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  mountFinancePayData;
+  executePayTransactions;
+  savePayFinances;
 }

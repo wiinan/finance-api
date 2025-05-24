@@ -13,7 +13,7 @@ import {
   FinanceService,
   InstallmentService,
 } from '../services';
-import { FinanceHelper } from '../helpers/finance.helpers';
+import { CreateFinanceHelper } from '../helpers/create-finance.helpers';
 import {
   CreditCardFinanceInfo,
   Finance,
@@ -22,11 +22,14 @@ import {
 import { EntityManager } from 'typeorm';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { PAYMENT_METHODS } from 'src/constants/finance.constants';
+import { QueueProducerService } from 'src/workers/producer-queue';
 
 export class CreditCardContext implements IBaseContext {
   private financeService: IFinanceService;
   private financecreditCardService: FinanceCreditcardService;
   private installmentService: IInstallmentService;
+
+  constructor(private readonly payTransactionQueue?: QueueProducerService) {}
 
   public mountFinanceData(data: RequestCreateFinanceDto): FinanceHandlerDto {
     const { additionalOptions, creditCardInfo } = data;
@@ -40,7 +43,7 @@ export class CreditCardContext implements IBaseContext {
       percentage: totalTaxes,
     });
 
-    const finance = FinanceHelper.normalizeFinanceData(
+    const finance = CreateFinanceHelper.normalizeFinanceData(
       data,
       liquidPrice,
       additionalOptions?.installments,
@@ -50,7 +53,7 @@ export class CreditCardContext implements IBaseContext {
       finance,
       additionalOptions,
       creditCardInfo: { ...creditCardInfo, userId: data.userId },
-      userBalance: FinanceHelper.getBalenceProps(finance),
+      userBalance: CreateFinanceHelper.getBalenceProps(finance),
     };
 
     return options;
@@ -77,7 +80,7 @@ export class CreditCardContext implements IBaseContext {
     const promises: Promise<any>[] = [];
 
     if (financeHandler.creditCardInfo) {
-      const creditcardFinance = FinanceHelper.mountFinanceInfoData(
+      const creditcardFinance = CreateFinanceHelper.mountFinanceInfoData(
         financeHandler.creditCardInfo,
         financeHandler.newFinance.id,
       );
@@ -90,7 +93,7 @@ export class CreditCardContext implements IBaseContext {
     }
 
     if (financeHandler?.additionalOptions) {
-      const creditCardFinance = FinanceHelper.mountFinanceInstallments(
+      const creditCardFinance = CreateFinanceHelper.mountFinanceInstallments(
         financeHandler.newFinance,
         financeHandler.additionalOptions,
       );
@@ -115,4 +118,14 @@ export class CreditCardContext implements IBaseContext {
       throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
     }
   }
+
+  validatePayFinance(currentFinance: Finance): void {
+    if (!currentFinance) {
+      throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  mountFinancePayData;
+  executePayTransactions;
+  savePayFinances;
 }
