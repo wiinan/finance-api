@@ -32,6 +32,7 @@ export class FinanceHelper {
 
         financesData.push({
           id: finance.financeId || finance.id,
+          installmentId: finance.installment && finance.id,
           price: finance.price,
           user: { name: user.name, id: user.id },
           type,

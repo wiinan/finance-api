@@ -23,11 +23,14 @@ import {
 } from 'src/database/entities';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { PAYMENT_METHODS } from 'src/constants/finance.constants';
+import { QueueProducerService } from 'src/workers/producer-queue';
 
 export class PixContext implements IBaseContext {
   private financeService: IFinanceService;
   private financePixService: IFinancePixService;
   private installmentService: IInstallmentService;
+
+  constructor(private readonly payTransactionQueue?: QueueProducerService) {}
 
   mountFinanceData(data: RequestCreateFinanceDto): FinanceHandlerDto {
     const { additionalOptions, pixInfo } = data;
@@ -108,4 +111,14 @@ export class PixContext implements IBaseContext {
       throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
     }
   }
+
+  validatePayFinance(currentFinance: Finance): void {
+    if (!currentFinance) {
+      throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  mountFinancePayData;
+  executePayTransactions;
+  savePayFinances;
 }

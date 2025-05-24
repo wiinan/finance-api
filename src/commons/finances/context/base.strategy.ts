@@ -1,6 +1,9 @@
 import { PAYMENT_METHODS } from 'src/constants/finance.constants';
 import {
   FinanceHandlerDto,
+  FinancePayBodyDto,
+  FinancePayOptionsDto,
+  FinancePayRequestDto,
   RequestCreateFinanceDto,
 } from '../dtos/finance.dto';
 import {
@@ -11,15 +14,19 @@ import {
 } from './';
 import { IBaseContext, IBaseStrategy } from '../interfaces';
 import { Injectable } from '@nestjs/common';
-import { EntityManager } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
 import { InstallmentContext } from './installment.context';
+import { Finance, FinanceInstallment } from 'src/database/entities';
+import { QueueProducerService } from 'src/workers/producer-queue';
 
 Injectable();
 export class BaseStrategy implements IBaseStrategy {
   private strategy: IBaseContext;
 
-  constructor(private readonly data: RequestCreateFinanceDto) {
-    const paymentMethodId = this.data?.paymentMethodId;
+  constructor(
+    private readonly paymentMethodId: number,
+    private readonly payTransactionQueue?: QueueProducerService,
+  ) {
     const paymentContextById = {
       [PAYMENT_METHODS.PIX]: PixContext,
       [PAYMENT_METHODS.CREDIT_CARD]: CreditCardContext,
@@ -28,13 +35,21 @@ export class BaseStrategy implements IBaseStrategy {
       [PAYMENT_METHODS.INSTALLMENT]: InstallmentContext,
     };
 
-    const strategyClass = paymentContextById[paymentMethodId] || BaseContext;
+    const strategyClass =
+      paymentContextById[this.paymentMethodId] || BaseContext;
 
-    this.strategy = new strategyClass();
+    this.strategy = new strategyClass(this.payTransactionQueue);
   }
 
-  mountFinanceData(): FinanceHandlerDto {
-    return this.strategy.mountFinanceData(this.data);
+  mountFinanceData(data: RequestCreateFinanceDto): FinanceHandlerDto {
+    return this.strategy.mountFinanceData(data);
+  }
+
+  mountFinancePayData(
+    currentFinance: Finance | FinanceInstallment,
+    data: FinancePayBodyDto,
+  ): FinancePayOptionsDto {
+    return this.strategy.mountFinancePayData(currentFinance, data);
   }
 
   async executeTransactions(
@@ -47,7 +62,28 @@ export class BaseStrategy implements IBaseStrategy {
     );
   }
 
-  validateCreateFinance(): void {
-    this.strategy.validateCreateFinance(this.data);
+  async executePayTransactions(
+    transactionalEntityManager: EntityManager,
+    financeHandler: FinancePayOptionsDto,
+  ): Promise<void> {
+    return await this.strategy.executePayTransactions(
+      transactionalEntityManager,
+      financeHandler,
+    );
+  }
+
+  async savePayFinances(
+    options: FinancePayRequestDto,
+    dataSource: DataSource,
+  ): Promise<void> {
+    return await this.strategy.savePayFinances(options, dataSource);
+  }
+
+  validateCreateFinance(data: RequestCreateFinanceDto): void {
+    this.strategy.validateCreateFinance(data);
+  }
+
+  validatePayFinance(finance: Finance | FinanceInstallment): void {
+    this.strategy.validatePayFinance(finance);
   }
 }

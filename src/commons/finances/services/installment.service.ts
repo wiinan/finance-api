@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import {
   FinanceInstallmentsDto,
+  FinancePayFilterDto,
+  FindFinanceParams,
   ListFinanceFilterDto,
+  UpdateFinanceBodyDto,
 } from '../dtos/finance.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FinanceInstallment } from 'src/database/entities';
@@ -64,5 +67,41 @@ export class InstallmentService implements IInstallmentService {
         },
       },
     });
+  }
+
+  async find(filter: FindFinanceParams): Promise<FinanceInstallment | null> {
+    return this.financeInstallmentModel.findOne({
+      where: filter,
+      relations: ['finance'],
+      select: {
+        id: true,
+        financeId: true,
+        liquidPrice: true,
+        receivedValue: true,
+        paidAt: true,
+        installments: true,
+        installment: true,
+        paymentMethodId: true,
+        userId: true,
+        statusId: true,
+        finance: {
+          receivedValue: true,
+        },
+      },
+    });
+  }
+
+  async update(
+    filter: FinancePayFilterDto,
+    data: UpdateFinanceBodyDto,
+  ): Promise<boolean> {
+    await this.financeInstallmentModel
+      .createQueryBuilder()
+      .update(FinanceInstallment)
+      .set(data)
+      .where('id = :installmentId', { filter })
+      .execute();
+
+    return true;
   }
 }

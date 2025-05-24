@@ -1,5 +1,5 @@
 import { UserBalanceDto } from 'src/commons/users/dtos/user.dto';
-import { Finance } from 'src/database/entities';
+import { Finance, FinanceInstallment } from 'src/database/entities';
 import { FindOperator } from 'typeorm';
 
 export type PercentageOptionsDto = {
@@ -118,3 +118,57 @@ export type FinanceHandlerDto = {
   financeInstallments?: FinanceInstallmentsDto[];
   newFinance?: Finance;
 } & FinanceInfosDto;
+
+export type FinancePayParamsDto = {
+  id: number;
+};
+
+export type FinancePayBodyDto = {
+  receivedValue: number;
+  installment?: number;
+  payerInfo?: string;
+};
+
+export type FinancePayRequestDto = {
+  data: FinancePayBodyDto;
+  filter: FinancePayParamsDto;
+};
+
+export type PayFinanceHandlerDto = {
+  currentFinance: Finance | FinanceInstallment | null;
+} & FinancePayOptionsDto;
+
+export type FindFinanceParams = { id: number; installment?: number };
+
+export type BalancePropsParamsDto = {
+  liquidPrice?: number;
+  typeId?: number;
+  receivedValue?: number;
+};
+
+export type PayFinanceDataDto = {
+  payerInfo?: string;
+  statusId: number;
+  receivedValue: number;
+};
+
+export type FinancePayFilterDto = {
+  financeId?: number;
+  installment?: number;
+  installmentId?: number;
+  userId?: number;
+};
+
+export type FinancePayOptionsDto = {
+  filter: FinancePayFilterDto;
+  userBalance: UserBalanceDto;
+  finance: PayFinanceDataDto;
+};
+
+export type UpdateFinanceBodyDto = {
+  liquidPrice?: number;
+  payerInfo?: string;
+  statusId?: number;
+  receivedValue?: number;
+  description?: string;
+};

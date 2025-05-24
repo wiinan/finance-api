@@ -4,11 +4,15 @@ import { Finance, FinanceInstallment } from 'src/database/entities';
 import { IsNull, Repository } from 'typeorm';
 import {
   FinanceDto,
+  FinancePayFilterDto,
+  FindFinanceParams,
   listFinanceDto,
   ListFinanceFilterDto,
+  UpdateFinanceBodyDto,
 } from '../dtos/finance.dto';
 import { IFinanceService, IInstallmentService } from '../interfaces';
 import { FinanceHelper } from '../helpers/finance.helpers';
+import { FINANCE_STATUS } from 'src/constants/finance.constants';
 
 @Injectable()
 export class FinanceService implements IFinanceService {
@@ -24,6 +28,21 @@ export class FinanceService implements IFinanceService {
     await this.financeModel.save(financeData);
 
     return financeData;
+  }
+
+  private async find(id: number): Promise<Finance | null> {
+    return this.financeModel.findOne({
+      where: { id },
+      select: {
+        id: true,
+        liquidPrice: true,
+        receivedValue: true,
+        paidAt: true,
+        paymentMethodId: true,
+        statusId: true,
+        userId: true,
+      },
+    });
   }
 
   private async listFinances(filter: ListFinanceFilterDto): Promise<Finance[]> {
@@ -95,5 +114,40 @@ export class FinanceService implements IFinanceService {
     ];
 
     return FinanceHelper.mountListFinances(finances, installments || []);
+  }
+
+  async findFinance(
+    filter: FindFinanceParams,
+  ): Promise<Finance | FinanceInstallment | null> {
+    if (filter.installment && this.installmentService) {
+      return this.installmentService?.find(filter);
+    }
+
+    return this.find(filter.id);
+  }
+
+  async update(
+    filter: FinancePayFilterDto,
+    data: UpdateFinanceBodyDto,
+  ): Promise<boolean> {
+    await this.financeModel
+      .createQueryBuilder()
+      .update(Finance)
+      .set(data)
+      .where('id = :financeId', filter)
+      .execute();
+
+    return true;
+  }
+
+  async resetFinanceTrasaction(): Promise<boolean> {
+    await this.financeModel
+      .createQueryBuilder()
+      .update(Finance)
+      .set({ statusId: FINANCE_STATUS.CANCELED })
+      .where('statusId = :statusId', { statusId: FINANCE_STATUS.PROCESSING })
+      .execute();
+
+    return true;
   }
 }

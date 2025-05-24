@@ -12,10 +12,13 @@ import { FinancePaymentLinkService } from '../services/finance-payment-link.serv
 import { IFinancePaymentLinkService } from '../interfaces/finance-payment-link.interface';
 import { PAYMENT_METHODS } from 'src/constants/finance.constants';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { QueueProducerService } from 'src/workers/producer-queue';
 
 export class PaymentLinkContext implements IBaseContext {
   private financeService: IFinanceService;
   private financePaymentLinkService: IFinancePaymentLinkService;
+
+  constructor(private readonly payTransactionQueue?: QueueProducerService) {}
 
   mountFinanceData(data: RequestCreateFinanceDto): FinanceHandlerDto {
     const { paymentLinkInfo } = data;
@@ -68,4 +71,14 @@ export class PaymentLinkContext implements IBaseContext {
       throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
     }
   }
+
+  validatePayFinance(currentFinance: Finance): void {
+    if (!currentFinance) {
+      throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  mountFinancePayData;
+  executePayTransactions;
+  savePayFinances;
 }

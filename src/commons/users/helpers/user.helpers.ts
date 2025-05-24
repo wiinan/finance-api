@@ -59,16 +59,22 @@ export class UserHelper {
     user: User,
     balance: UserBalanceDto,
   ): UserBalanceDto {
+    return Object.keys(balance).reduce(
+      (acc, key: string) => {
+        if (!balance[key]) {
+          return acc;
+        }
 
-    return Object.keys(balance).reduce((acc, key: string) => {
-      if (!balance[key]) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        acc[key] = CalculateUtils.sumValues([user[key], balance[key]]);
+
         return acc;
-      }
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      acc[key] = CalculateUtils.sumValues([user[key], balance[key]]);
-
-      return acc;
-    }, user);
+      },
+      {
+        incomeBalance: ~~user.incomeBalance,
+        expenseBalance: ~~user.expenseBalance,
+        receivedBalance: ~~user.receivedBalance,
+      },
+    );
   }
 }
