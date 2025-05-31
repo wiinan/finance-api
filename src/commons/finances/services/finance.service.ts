@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Finance, FinanceInstallment } from 'src/database/entities';
-import { IsNull, Repository } from 'typeorm';
+import { FindOptionsWhere, IsNull, Repository } from 'typeorm';
 import {
   FinanceDto,
   FinancePayFilterDto,
@@ -116,14 +116,37 @@ export class FinanceService implements IFinanceService {
     return FinanceHelper.mountListFinances(finances, installments || []);
   }
 
-  async findFinance(
-    filter: FindFinanceParams,
-  ): Promise<Finance | FinanceInstallment | null> {
-    if (filter.installment && this.installmentService) {
-      return this.installmentService?.find(filter);
+  async findFinance(filter: FindFinanceParams): Promise<Finance | null> {
+    const findParams: {
+      where: FindOptionsWhere<Finance>;
+      relations?: Array<string>;
+    } = {
+      where: {
+        id: filter.id,
+        isDeleted: false,
+      },
+    };
+
+    if (filter.installment) {
+      findParams.where.installment = {
+        installment: filter.installment,
+        isDeleted: false,
+      };
+      findParams.relations = ['installment'];
     }
 
-    return this.find(filter.id);
+    return this.financeModel.findOne({
+      ...findParams,
+      select: {
+        id: true,
+        liquidPrice: true,
+        receivedValue: true,
+        paidAt: true,
+        paymentMethodId: true,
+        statusId: true,
+        userId: true,
+      },
+    });
   }
 
   async update(
@@ -141,11 +164,21 @@ export class FinanceService implements IFinanceService {
   }
 
   async resetFinanceTrasaction(): Promise<boolean> {
+    const financesWithStatusProcessing = await this.financeModel.count({
+      where: { statusId: FINANCE_STATUS.PROCESSING },
+    });
+
+    if (!financesWithStatusProcessing) {
+      return true;
+    }
+
     await this.financeModel
       .createQueryBuilder()
       .update(Finance)
-      .set({ statusId: FINANCE_STATUS.CANCELED })
-      .where('statusId = :statusId', { statusId: FINANCE_STATUS.PROCESSING })
+      .set({ statusId: FINANCE_STATUS.CANCELED, isDeleted: false })
+      .where('statusId = :statusId AND isDeleted = false', {
+        statusId: FINANCE_STATUS.PROCESSING,
+      })
       .execute();
 
     return true;

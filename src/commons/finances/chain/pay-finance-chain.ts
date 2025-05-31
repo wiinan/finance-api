@@ -87,12 +87,19 @@ export class PayFinanceChain {
   }
 
   public async run({ data, filter }: FinancePayRequestDto): Promise<boolean> {
-    const { strategyContext } = await this.getStrategyContext({
+    const { strategyContext, currentFinance } = await this.getStrategyContext({
       data,
       filter,
     });
 
-    await strategyContext.savePayFinances({ data, filter }, this.dataSource);
+    const financeInstallment = currentFinance.installment?.find(
+      (installment) => installment.installment === data.installment,
+    );
+
+    await strategyContext.savePayFinances(
+      { data, filter: { ...filter, installmentId: financeInstallment?.id } },
+      this.dataSource,
+    );
 
     return true;
   }

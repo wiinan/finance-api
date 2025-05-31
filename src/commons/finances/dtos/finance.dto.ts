@@ -121,6 +121,7 @@ export type FinanceHandlerDto = {
 
 export type FinancePayParamsDto = {
   id: number;
+  installmentId?: number;
 };
 
 export type FinancePayBodyDto = {
@@ -148,6 +149,7 @@ export type BalancePropsParamsDto = {
 
 export type PayFinanceDataDto = {
   payerInfo?: string;
+  paidAt?: Date;
   statusId: number;
   receivedValue: number;
 };
@@ -163,6 +165,7 @@ export type FinancePayOptionsDto = {
   filter: FinancePayFilterDto;
   userBalance: UserBalanceDto;
   finance: PayFinanceDataDto;
+  financeInstallment?: PayFinanceDataDto;
 };
 
 export type UpdateFinanceBodyDto = {

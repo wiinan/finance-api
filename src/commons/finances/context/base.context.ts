@@ -10,10 +10,11 @@ import { CalculateUtils } from 'src/helpers/calculate';
 import { CreateFinanceHelper } from '../helpers/create-finance.helpers';
 import { DataSource, EntityManager } from 'typeorm';
 import { FinanceService } from '../services';
-import { Finance, FinanceInstallment } from 'src/database/entities';
+import { Finance } from 'src/database/entities';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { FINANCE_STATUS } from 'src/constants/finance.constants';
 import { QueueProducerService } from 'src/workers/producer-queue';
+import * as dayjs from 'dayjs';
 
 export class BaseContext implements IBaseContext {
   private financeService: IFinanceService;
@@ -37,7 +38,7 @@ export class BaseContext implements IBaseContext {
   }
 
   mountFinancePayData(
-    currentFinance: Finance | FinanceInstallment,
+    currentFinance: Finance,
     data: FinancePayBodyDto,
   ): FinancePayOptionsDto {
     return {
@@ -45,7 +46,11 @@ export class BaseContext implements IBaseContext {
       filter: { userId: currentFinance.userId, financeId: currentFinance.id },
       finance: {
         payerInfo: data.payerInfo,
-        statusId: CreateFinanceHelper.getFinanceStatus(data, currentFinance),
+        paidAt: dayjs().toDate(),
+        statusId: CreateFinanceHelper.getFinanceStatus(
+          data.receivedValue,
+          currentFinance.liquidPrice,
+        ),
         receivedValue: CalculateUtils.sumValues([
           currentFinance.receivedValue,
           data.receivedValue,

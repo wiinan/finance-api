@@ -1,4 +1,4 @@
-import { Finance, FinanceInstallment } from 'src/database/entities';
+import { Finance } from 'src/database/entities';
 import {
   FinanceDto,
   FinancePayFilterDto,
@@ -15,8 +15,6 @@ export abstract class IFinanceService {
     filter: FinancePayFilterDto,
     data: UpdateFinanceBodyDto,
   ): Promise<boolean>;
-  abstract findFinance(
-    filter: FindFinanceParams,
-  ): Promise<Finance | FinanceInstallment | null>;
+  abstract findFinance(filter: FindFinanceParams): Promise<Finance | null>;
   abstract resetFinanceTrasaction(): Promise<boolean>;
 }

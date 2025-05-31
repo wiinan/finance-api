@@ -15,4 +15,5 @@ export abstract class IInstallmentService {
     filter: FinancePayFilterDto,
     data: UpdateFinanceBodyDto,
   ): Promise<boolean>;
+  abstract resetInstallmentTrasaction(): Promise<boolean>;
 }

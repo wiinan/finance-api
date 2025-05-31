@@ -5,7 +5,6 @@ import {
   creditCardInfoDto,
   FinanceDto,
   FinanceInstallmentsDto,
-  FinancePayBodyDto,
   PaymentLinkInfoDto,
   PixInfoDto,
   RequestCreateFinanceDto,
@@ -14,7 +13,6 @@ import { CalculateUtils } from 'src/helpers/calculate';
 import * as dayjs from 'dayjs';
 import { UserBalanceDto } from 'src/commons/users/dtos/user.dto';
 import { FINANCE_STATUS, FINANCE_TYPES } from 'src/constants/finance.constants';
-import { Finance, FinanceInstallment } from 'src/database/entities';
 
 export class CreateFinanceHelper {
   public static normalizeFinanceData(
@@ -38,14 +36,14 @@ export class CreateFinanceHelper {
   }
 
   public static getFinanceStatus(
-    data: FinancePayBodyDto,
-    currentFinance: Finance | FinanceInstallment,
+    receivedValue: number,
+    liquidPrice: number,
   ): number {
-    if (data.receivedValue >= currentFinance.liquidPrice) {
+    if (receivedValue >= liquidPrice) {
       return FINANCE_STATUS.PAID;
     }
 
-    if (data.receivedValue <= currentFinance.liquidPrice) {
+    if (receivedValue <= liquidPrice) {
       return FINANCE_STATUS.PARTIAL;
     }
 
