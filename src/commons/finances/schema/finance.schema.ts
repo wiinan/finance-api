@@ -1,6 +1,7 @@
 import {
   ZOD_DATE_REQUIRED,
   ZOD_NUMBER_NULLABLE,
+  ZOD_NUMBER_PARAMS,
   ZOD_NUMBER_REQUIRED,
   ZOD_STRING_NULLABLE,
   ZOD_STRING_PARSE_TO_NUMBER,
@@ -23,6 +24,18 @@ export const ListFinanceSchema = z
   .refine(({ startDate, endDate }) =>
     Utils.validateDateSchema({ startDate, endDate }),
   );
+
+export const FilterFinanceSchema = z.object({
+  id: ZOD_NUMBER_PARAMS,
+});
+
+export const PayFinanceBodySchema = z
+  .object({
+    receivedValue: ZOD_NUMBER_REQUIRED,
+    payerInfo: ZOD_STRING_NULLABLE,
+    installment: ZOD_NUMBER_NULLABLE,
+  })
+  .strip();
 
 export const CreateFinanceSchema = z
   .object({

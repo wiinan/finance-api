@@ -19,9 +19,14 @@ export const FINANCE_STATUS = {
   CLOSED: 4,
   CANCELED: 5,
   REFUND: 6,
+  PROCESSING: 7,
 };
 
 export const FINANCE_TYPES = {
   OUT: 1,
   INPUT: 2,
+};
+
+export const TANSACTION_QUEUE = {
+  PAY: 'payFinanceTransaction',
 };

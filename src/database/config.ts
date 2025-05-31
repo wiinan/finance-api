@@ -11,6 +11,7 @@ const databaseConfig = (): DataSourceOptions => ({
   entities: [__dirname + '/entities/*.entity{.ts,.js}'],
   migrations: [__dirname + '/migration/*.{js,ts}'],
   synchronize: false,
+  logging: true,
 });
 
 @Global() // makes the module available globally for other modules once imported in the app modules

@@ -27,14 +27,15 @@ export class CreateFinanceChain {
   }
 
   public async run(options: RequestCreateFinanceDto): Promise<Finance> {
-    const strategyContext = new BaseStrategy({
+    const data = {
       ...options,
       statusId: FINANCE_STATUS.OPEN,
-    });
+    };
+    const strategyContext = new BaseStrategy(data.paymentMethodId);
 
-    strategyContext.validateCreateFinance();
+    strategyContext.validateCreateFinance(data);
 
-    const financeHandler = strategyContext.mountFinanceData();
+    const financeHandler = strategyContext.mountFinanceData(data);
 
     await this.dataSource.transaction(async (transactionalEntityManager) => {
       await Promise.all([

@@ -1,13 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import {
   FinanceInstallmentsDto,
+  FinancePayFilterDto,
+  FindFinanceParams,
   ListFinanceFilterDto,
+  UpdateFinanceBodyDto,
 } from '../dtos/finance.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FinanceInstallment } from 'src/database/entities';
 import { Repository } from 'typeorm';
 import { IInstallmentService } from '../interfaces/installment.interface';
 import { FinanceHelper } from '../helpers/finance.helpers';
+import { FINANCE_STATUS } from 'src/constants/finance.constants';
 
 @Injectable()
 export class InstallmentService implements IInstallmentService {
@@ -64,5 +68,66 @@ export class InstallmentService implements IInstallmentService {
         },
       },
     });
+  }
+
+  async find(filter: FindFinanceParams): Promise<FinanceInstallment | null> {
+    return this.financeInstallmentModel.findOne({
+      where: filter,
+      relations: ['finance'],
+      select: {
+        id: true,
+        financeId: true,
+        liquidPrice: true,
+        receivedValue: true,
+        paidAt: true,
+        installments: true,
+        installment: true,
+        paymentMethodId: true,
+        userId: true,
+        statusId: true,
+        finance: {
+          receivedValue: true,
+        },
+      },
+    });
+  }
+
+  async update(
+    filter: FinancePayFilterDto,
+    data: UpdateFinanceBodyDto,
+  ): Promise<boolean> {
+    await this.financeInstallmentModel
+      .createQueryBuilder()
+      .update(FinanceInstallment)
+      .set(data)
+      .where('id = :installmentId', filter)
+      .execute();
+
+    return true;
+  }
+
+  async resetInstallmentTrasaction(): Promise<boolean> {
+    const installmentsWithStatusProcessing =
+      await this.financeInstallmentModel.count({
+        where: {
+          statusId: FINANCE_STATUS.PROCESSING,
+          isDeleted: false,
+        },
+      });
+
+    if (!installmentsWithStatusProcessing) {
+      return true;
+    }
+
+    await this.financeInstallmentModel
+      .createQueryBuilder()
+      .update(FinanceInstallment)
+      .set({ statusId: FINANCE_STATUS.CANCELED })
+      .where('statusId = :statusId AND isDeleted = false', {
+        statusId: FINANCE_STATUS.PROCESSING,
+      })
+      .execute();
+
+    return true;
   }
 }

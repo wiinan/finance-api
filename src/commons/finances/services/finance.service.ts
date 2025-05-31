@@ -1,14 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Finance, FinanceInstallment } from 'src/database/entities';
-import { IsNull, Repository } from 'typeorm';
+import { FindOptionsWhere, IsNull, Repository } from 'typeorm';
 import {
   FinanceDto,
+  FinancePayFilterDto,
+  FindFinanceParams,
   listFinanceDto,
   ListFinanceFilterDto,
+  UpdateFinanceBodyDto,
 } from '../dtos/finance.dto';
 import { IFinanceService, IInstallmentService } from '../interfaces';
 import { FinanceHelper } from '../helpers/finance.helpers';
+import { FINANCE_STATUS } from 'src/constants/finance.constants';
 
 @Injectable()
 export class FinanceService implements IFinanceService {
@@ -24,6 +28,21 @@ export class FinanceService implements IFinanceService {
     await this.financeModel.save(financeData);
 
     return financeData;
+  }
+
+  private async find(id: number): Promise<Finance | null> {
+    return this.financeModel.findOne({
+      where: { id },
+      select: {
+        id: true,
+        liquidPrice: true,
+        receivedValue: true,
+        paidAt: true,
+        paymentMethodId: true,
+        statusId: true,
+        userId: true,
+      },
+    });
   }
 
   private async listFinances(filter: ListFinanceFilterDto): Promise<Finance[]> {
@@ -95,5 +114,73 @@ export class FinanceService implements IFinanceService {
     ];
 
     return FinanceHelper.mountListFinances(finances, installments || []);
+  }
+
+  async findFinance(filter: FindFinanceParams): Promise<Finance | null> {
+    const findParams: {
+      where: FindOptionsWhere<Finance>;
+      relations?: Array<string>;
+    } = {
+      where: {
+        id: filter.id,
+        isDeleted: false,
+      },
+    };
+
+    if (filter.installment) {
+      findParams.where.installment = {
+        installment: filter.installment,
+        isDeleted: false,
+      };
+      findParams.relations = ['installment'];
+    }
+
+    return this.financeModel.findOne({
+      ...findParams,
+      select: {
+        id: true,
+        liquidPrice: true,
+        receivedValue: true,
+        paidAt: true,
+        paymentMethodId: true,
+        statusId: true,
+        userId: true,
+      },
+    });
+  }
+
+  async update(
+    filter: FinancePayFilterDto,
+    data: UpdateFinanceBodyDto,
+  ): Promise<boolean> {
+    await this.financeModel
+      .createQueryBuilder()
+      .update(Finance)
+      .set(data)
+      .where('id = :financeId', filter)
+      .execute();
+
+    return true;
+  }
+
+  async resetFinanceTrasaction(): Promise<boolean> {
+    const financesWithStatusProcessing = await this.financeModel.count({
+      where: { statusId: FINANCE_STATUS.PROCESSING },
+    });
+
+    if (!financesWithStatusProcessing) {
+      return true;
+    }
+
+    await this.financeModel
+      .createQueryBuilder()
+      .update(Finance)
+      .set({ statusId: FINANCE_STATUS.CANCELED, isDeleted: false })
+      .where('statusId = :statusId AND isDeleted = false', {
+        statusId: FINANCE_STATUS.PROCESSING,
+      })
+      .execute();
+
+    return true;
   }
 }

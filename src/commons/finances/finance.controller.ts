@@ -2,18 +2,24 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
+  Put,
   Query,
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
-import { CreateFinanceChain } from './chain/create-finance.chain';
+import { CreateFinanceChain, PayFinanceChain } from './chain';
 import { AuthGuard, ZodValidationPipe } from 'src/middleware';
 import {
   CreateFinanceSchema,
+  FilterFinanceSchema,
   ListFinanceSchema,
+  PayFinanceBodySchema,
 } from './schema/finance.schema';
 import {
+  FinancePayBodyDto,
+  FinancePayParamsDto,
   listFinanceDto,
   ListFinanceFilterDto,
   RequestCreateFinanceDto,
@@ -25,6 +31,7 @@ import { IFinanceService } from './interfaces';
 export class FinanceController {
   constructor(
     private readonly createFinanceChain: CreateFinanceChain,
+    private readonly payFinanceChain: PayFinanceChain,
     private readonly financeService: IFinanceService,
   ) {}
 
@@ -40,5 +47,16 @@ export class FinanceController {
   @UsePipes(new ZodValidationPipe(ListFinanceSchema))
   list(@Query() filter: ListFinanceFilterDto): Promise<listFinanceDto[]> {
     return this.financeService.list(filter);
+  }
+
+  @Put('pay/:id')
+  @UseGuards(AuthGuard)
+  pay(
+    @Param(new ZodValidationPipe(FilterFinanceSchema))
+    filter: FinancePayParamsDto,
+    @Body(new ZodValidationPipe(PayFinanceBodySchema))
+    data: FinancePayBodyDto,
+  ): Promise<boolean> {
+    return this.payFinanceChain.run({ data, filter });
   }
 }

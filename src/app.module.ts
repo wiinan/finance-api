@@ -6,6 +6,7 @@ import { UserModule } from './commons/users/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { GoogleModule } from './commons/google/google.module';
 import { FinanceModule } from './commons/finances/finance.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { FinanceModule } from './commons/finances/finance.module';
       secret: process.env.APPLICATION_SECRET,
       signOptions: { expiresIn: '24h' },
     }),
+    ScheduleModule.forRoot(),
     TypeOrmModule,
     UserModule,
     GoogleModule,

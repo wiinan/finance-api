@@ -1,6 +1,7 @@
 import { pick, times } from 'lodash';
 import {
   AdditionalFinanceOptionsDto,
+  BalancePropsParamsDto,
   creditCardInfoDto,
   FinanceDto,
   FinanceInstallmentsDto,
@@ -11,7 +12,7 @@ import {
 import { CalculateUtils } from 'src/helpers/calculate';
 import * as dayjs from 'dayjs';
 import { UserBalanceDto } from 'src/commons/users/dtos/user.dto';
-import { FINANCE_TYPES } from 'src/constants/finance.constants';
+import { FINANCE_STATUS, FINANCE_TYPES } from 'src/constants/finance.constants';
 
 export class CreateFinanceHelper {
   public static normalizeFinanceData(
@@ -32,6 +33,21 @@ export class CreateFinanceHelper {
         'userId',
       ]),
     };
+  }
+
+  public static getFinanceStatus(
+    receivedValue: number,
+    liquidPrice: number,
+  ): number {
+    if (receivedValue >= liquidPrice) {
+      return FINANCE_STATUS.PAID;
+    }
+
+    if (receivedValue <= liquidPrice) {
+      return FINANCE_STATUS.PARTIAL;
+    }
+
+    return FINANCE_STATUS.CLOSED;
   }
 
   static mountFinanceInstallments(
@@ -80,10 +96,10 @@ export class CreateFinanceHelper {
     liquidPrice,
     typeId,
     receivedValue,
-  }: FinanceDto): UserBalanceDto {
+  }: BalancePropsParamsDto): UserBalanceDto {
     const balanceOptions: UserBalanceDto = {};
 
-    if (liquidPrice) {
+    if (liquidPrice && typeId) {
       const balanceByTypeId = {
         [FINANCE_TYPES.OUT]: 'expenseBalance',
         [FINANCE_TYPES.INPUT]: 'incomeBalance',
