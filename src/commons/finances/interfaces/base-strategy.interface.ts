@@ -28,4 +28,8 @@ export abstract class IBaseStrategy {
     dataSource: DataSource,
   ): Promise<void>;
   abstract validatePayFinance(finance: Finance | FinanceInstallment): void;
+  abstract removeFinanceInfo(
+    financeId: number,
+    entityManager: EntityManager,
+  ): Promise<void>;
 }

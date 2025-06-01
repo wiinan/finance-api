@@ -29,6 +29,10 @@ export const FilterFinanceSchema = z.object({
   id: ZOD_NUMBER_PARAMS,
 });
 
+export const DeleteFinanceSchema = z.object({
+  installment: ZOD_STRING_PARSE_TO_NUMBER,
+});
+
 export const PayFinanceBodySchema = z
   .object({
     receivedValue: ZOD_NUMBER_REQUIRED,

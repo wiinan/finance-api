@@ -147,4 +147,15 @@ export class PaymentLinkContext implements IBaseContext {
 
     await this.payTransactionQueue?.addJob(options);
   }
+
+  async removeFinanceInfo(
+    financeId: number,
+    entityManager: EntityManager,
+  ): Promise<void> {
+    this.financePaymentLinkService = new FinancePaymentLinkService(
+      entityManager.getRepository(PaymentLinkFinanceInfo),
+    );
+
+    await this.financePaymentLinkService.remove(financeId);
+  }
 }

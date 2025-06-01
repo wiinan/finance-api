@@ -255,4 +255,15 @@ export class PixContext implements IBaseContext {
 
     await this.payTransactionQueue?.addJob(options);
   }
+
+  async removeFinanceInfo(
+    financeId: number,
+    entityManager: EntityManager,
+  ): Promise<void> {
+    this.financePixService = new FinancePixService(
+      entityManager.getRepository(PixFinanceInfo),
+    );
+
+    await this.financePixService.remove(financeId);
+  }
 }

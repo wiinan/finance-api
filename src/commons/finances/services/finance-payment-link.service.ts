@@ -16,4 +16,13 @@ export class FinancePaymentLinkService implements IFinancePaymentLinkService {
 
     await this.paymentLinkFinanceModel.save(paymentLink);
   }
+
+  async remove(financeId: number): Promise<boolean> {
+    await this.paymentLinkFinanceModel.update(
+      { financeId },
+      { isDeleted: true },
+    );
+
+    return true;
+  }
 }

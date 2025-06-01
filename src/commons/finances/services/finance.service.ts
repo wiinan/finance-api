@@ -30,21 +30,6 @@ export class FinanceService implements IFinanceService {
     return financeData;
   }
 
-  private async find(id: number): Promise<Finance | null> {
-    return this.financeModel.findOne({
-      where: { id },
-      select: {
-        id: true,
-        liquidPrice: true,
-        receivedValue: true,
-        paidAt: true,
-        paymentMethodId: true,
-        statusId: true,
-        userId: true,
-      },
-    });
-  }
-
   private async listFinances(filter: ListFinanceFilterDto): Promise<Finance[]> {
     const whereOptions = FinanceHelper.getFinanceFilters<Finance>({
       ...filter,
@@ -140,6 +125,8 @@ export class FinanceService implements IFinanceService {
       select: {
         id: true,
         liquidPrice: true,
+        installments: true,
+        typeId: true,
         receivedValue: true,
         paidAt: true,
         paymentMethodId: true,

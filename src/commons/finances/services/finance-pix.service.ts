@@ -17,4 +17,10 @@ export class FinancePixService implements IFinancePixService {
 
     await this.pixFinanceModel.save(pix);
   }
+
+  async remove(financeId: number): Promise<boolean> {
+    await this.pixFinanceModel.update({ financeId }, { isDeleted: true });
+
+    return true;
+  }
 }

@@ -241,4 +241,15 @@ export class CreditCardContext implements IBaseContext {
 
     await this.payTransactionQueue?.addJob(options);
   }
+
+  async removeFinanceInfo(
+    financeId: number,
+    entityManager: EntityManager,
+  ): Promise<void> {
+    this.financecreditCardService = new FinanceCreditcardService(
+      entityManager.getRepository(CreditCardFinanceInfo),
+    );
+
+    await this.financecreditCardService.remove(financeId);
+  }
 }

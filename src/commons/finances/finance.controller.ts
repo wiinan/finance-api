@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -9,7 +10,11 @@ import {
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
-import { CreateFinanceChain, PayFinanceChain } from './chain';
+import {
+  CreateFinanceChain,
+  PayFinanceChain,
+  DeleteFinanceChain,
+} from './chain';
 import { AuthGuard, ZodValidationPipe } from 'src/middleware';
 import {
   CreateFinanceSchema,
@@ -32,6 +37,7 @@ export class FinanceController {
   constructor(
     private readonly createFinanceChain: CreateFinanceChain,
     private readonly payFinanceChain: PayFinanceChain,
+    private readonly deleteFinanceChain: DeleteFinanceChain,
     private readonly financeService: IFinanceService,
   ) {}
 
@@ -58,5 +64,14 @@ export class FinanceController {
     data: FinancePayBodyDto,
   ): Promise<boolean> {
     return this.payFinanceChain.run({ data, filter });
+  }
+
+  @Delete('/:id')
+  @UseGuards(AuthGuard)
+  delete(
+    @Param(new ZodValidationPipe(FilterFinanceSchema))
+    filter: FinancePayParamsDto,
+  ) {
+    return this.deleteFinanceChain.run(filter);
   }
 }

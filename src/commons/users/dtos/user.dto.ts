@@ -41,7 +41,8 @@ export type UserFilterDto = {
 
 export type UpdateUserDto = {
   password?: string;
-} & UserFilterDto;
+} & UserFilterDto &
+  UserBalanceDto;
 
 export type WhereUserParamsDto = {
   parameters: UserFilterDto;
@@ -50,4 +51,12 @@ export type WhereUserParamsDto = {
 
 export type UserParamsDto = {
   id: number;
+};
+
+export type CronUserBalanceDataDto = {
+  userId: number;
+  typeId: number;
+  hasUpdateBalance: boolean;
+  liquidPrice?: number;
+  receivedBalance?: number;
 };

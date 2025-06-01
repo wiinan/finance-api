@@ -125,4 +125,8 @@ export class BaseContext implements IBaseContext {
     )
       throw new HttpException('FINANCE_CANNOT_BE_PAID', HttpStatus.BAD_REQUEST);
   }
+
+  async removeFinanceInfo(): Promise<void> {
+    return Promise.resolve();
+  }
 }

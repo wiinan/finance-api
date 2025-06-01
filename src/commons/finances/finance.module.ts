@@ -31,6 +31,7 @@ import { FinanceProcessQueue } from '../../workers/queue-process';
 import { BullModule } from '@nestjs/bullmq';
 import { TANSACTION_QUEUE } from 'src/constants/finance.constants';
 import { CronJobFinance } from 'src/crons/finance.cron';
+import { DeleteFinanceChain } from './chain/delete-finance.chain';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { CronJobFinance } from 'src/crons/finance.cron';
     { provide: IBaseStrategy, useClass: BaseStrategy },
     CreateFinanceChain,
     PayFinanceChain,
+    DeleteFinanceChain,
     CronJobFinance,
   ],
   exports: [],

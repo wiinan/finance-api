@@ -1,4 +1,5 @@
 import {
+  CronUserBalanceDataDto,
   LoginDto,
   LoginDtoData,
   UpdateUserDto,
@@ -20,4 +21,6 @@ export abstract class IUserService {
     filter: UserParamsDto,
     data: UpdateUserDto,
   ): Promise<void>;
+  abstract getUserIncomeAndExpenseBalances(): Promise<CronUserBalanceDataDto[]>;
+  abstract getUserReceivedValueBalance(): Promise<CronUserBalanceDataDto[]>;
 }

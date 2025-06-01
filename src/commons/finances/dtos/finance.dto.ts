@@ -174,4 +174,5 @@ export type UpdateFinanceBodyDto = {
   statusId?: number;
   receivedValue?: number;
   description?: string;
+  isDeleted?: boolean;
 };

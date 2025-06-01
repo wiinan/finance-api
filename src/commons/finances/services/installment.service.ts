@@ -130,4 +130,15 @@ export class InstallmentService implements IInstallmentService {
 
     return true;
   }
+
+  async removeInstallments(filter: FinancePayFilterDto): Promise<boolean> {
+    await this.financeInstallmentModel
+      .createQueryBuilder()
+      .update(FinanceInstallment)
+      .set({ isDeleted: true })
+      .where('financeId = :financeId', filter)
+      .execute();
+
+    return true;
+  }
 }

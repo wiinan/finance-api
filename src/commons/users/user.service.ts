@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/database/entities/user.entity';
 import { Repository } from 'typeorm';
 import {
+  CronUserBalanceDataDto,
   LoginDto,
   LoginDtoData,
   UpdateUserDto,
@@ -152,5 +153,57 @@ export class UserService implements IUserService {
     const balanceData = UserHelper.calculateBalances(userData, data);
 
     await this.update(filter, balanceData);
+  }
+
+  public async getUserIncomeAndExpenseBalances(): Promise<
+    CronUserBalanceDataDto[]
+  > {
+    const query: string = `SELECT
+        users.id as "userId",
+        finances."typeId",
+        SUM(finances."liquidPrice") as "liquidPrice",
+        CASE
+          WHEN finances."typeId" = 1
+          AND SUM(finances."liquidPrice") != users."expenseBalance" THEN true
+          WHEN finances."typeId" = 2
+          AND SUM(finances."liquidPrice") != users."incomeBalance" THEN true
+          ELSE false
+        END as "hasUpdateBalance"
+      FROM
+        finances
+        LEFT JOIN users ON users.id = finances."userId"
+        AND users."isDeleted" = false
+      WHERE
+        finances."isDeleted" = false
+      GROUP BY
+        users.id,
+        finances."typeId";`;
+
+    return ((await this.userModel.query(query)) ||
+      []) as CronUserBalanceDataDto[];
+  }
+
+  public async getUserReceivedValueBalance(): Promise<
+    CronUserBalanceDataDto[]
+  > {
+    const query: string = `
+      SELECT
+        users.id as "userId",
+        SUM(finances."receivedValue") as "receivedValue",
+        CASE
+          WHEN SUM(finances."receivedValue") != users."receivedBalance" THEN true
+          ELSE false
+        END as "hasUpdateBalance"
+      FROM finances
+        LEFT JOIN users ON users.id = finances."userId" AND users."isDeleted" = false
+      WHERE
+        finances."isDeleted" = false
+        AND finances."typeId" = 2
+      GROUP BY
+        users.id
+    `;
+
+    return ((await this.userModel.query(query)) ||
+      []) as CronUserBalanceDataDto[];
   }
 }

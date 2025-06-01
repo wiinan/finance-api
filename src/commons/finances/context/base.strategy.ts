@@ -86,4 +86,11 @@ export class BaseStrategy implements IBaseStrategy {
   validatePayFinance(finance: Finance | FinanceInstallment): void {
     this.strategy.validatePayFinance(finance);
   }
+
+  async removeFinanceInfo(
+    financeId: number,
+    entityManager: EntityManager,
+  ): Promise<void> {
+    await this.strategy.removeFinanceInfo(financeId, entityManager);
+  }
 }

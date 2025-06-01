@@ -17,4 +17,10 @@ export class FinanceCreditcardService implements IFinanceCreditcardService {
 
     await this.creditcardModel.save(creditCardFinance);
   }
+
+  async remove(financeId: number): Promise<boolean> {
+    await this.creditcardModel.update({ financeId }, { isDeleted: true });
+
+    return true;
+  }
 }

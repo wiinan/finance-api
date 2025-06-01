@@ -30,4 +30,8 @@ export abstract class IBaseContext {
   abstract validatePayFinance(
     currentFinance: Finance | FinanceInstallment,
   ): void;
+  abstract removeFinanceInfo(
+    financeId: number,
+    entityManager: EntityManager,
+  ): Promise<void>;
 }

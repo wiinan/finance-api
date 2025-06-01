@@ -203,4 +203,8 @@ export class InstallmentContext implements IBaseContext {
 
     await this.payTransactionQueue?.addJob(options);
   }
+
+  async removeFinanceInfo(): Promise<void> {
+    await Promise.resolve();
+  }
 }

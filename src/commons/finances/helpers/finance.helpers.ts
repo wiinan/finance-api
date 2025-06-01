@@ -9,6 +9,8 @@ import {
 import { FindOptionsWhere } from 'typeorm';
 import { SchemaUtils } from 'src/helpers/schema';
 import { pick } from 'lodash';
+import { FINANCE_STATUS } from 'src/constants/finance.constants';
+import { BadRequestException } from '@nestjs/common';
 
 export class FinanceHelper {
   private static getFinanceInfo(
@@ -71,5 +73,21 @@ export class FinanceHelper {
     };
 
     return whereOptions as FindOptionsWhere<T>;
+  }
+
+  public static validateFinanceToRemove(finance?: Finance | null) {
+    if (!finance) {
+      throw new BadRequestException('FINANCE_NOT_FOUND');
+    }
+
+    if (
+      ![
+        FINANCE_STATUS.CANCELED,
+        FINANCE_STATUS.OPEN,
+        FINANCE_STATUS.CLOSED,
+      ].includes(finance.statusId)
+    ) {
+      throw new BadRequestException('FINANCE_CANNOT_BE_REMOVED');
+    }
   }
 }
