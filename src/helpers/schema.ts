@@ -1,5 +1,5 @@
 import * as dayjs from 'dayjs';
-import { Between, FindOperator } from 'typeorm';
+import { Between, FindOperator, ILike } from 'typeorm';
 
 export class SchemaUtils {
   public static betweenDates(
@@ -10,5 +10,11 @@ export class SchemaUtils {
       dayjs(startDate).startOf('day').toDate(),
       dayjs(endDate).endOf('day').toDate(),
     );
+  }
+
+  public static getILikeFilter(
+    text?: string,
+  ): FindOperator<string> | undefined {
+    return text ? ILike(`%${text}%`) : undefined;
   }
 }
