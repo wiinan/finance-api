@@ -4,7 +4,6 @@ export type GoogleAuth = {
   name: string;
   accessToken: string;
   refreshToken?: string;
-  password: string;
 };
 
 export type RequestGoogle = {

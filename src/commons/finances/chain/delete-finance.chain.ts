@@ -9,7 +9,6 @@ import { FinancePayParamsDto } from '../dtos/finance.dto';
 import { FinanceHelper } from '../helpers/finance.helpers';
 import { UserBalanceDto } from 'src/commons/users/dtos/user.dto';
 import { UserService } from 'src/commons/users/user.service';
-import { JwtService } from '@nestjs/jwt';
 import { CreateFinanceHelper } from '../helpers/create-finance.helpers';
 
 @Injectable()
@@ -26,7 +25,7 @@ export class DeleteFinanceChain {
     transactionalEntityManager: EntityManager,
   ): Promise<void> {
     const userModule = transactionalEntityManager.getRepository(User);
-    this.userService = new UserService(userModule, new JwtService());
+    this.userService = new UserService(userModule);
 
     await this.userService.updateUserBalance({ id: userId }, userBalance);
   }

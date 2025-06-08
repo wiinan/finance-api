@@ -48,6 +48,7 @@ export class FinanceHelper {
           installments: finance.installments,
           receivedValue: finance.receivedValue,
           paidAt: finance.paidAt,
+          description: finance.description,
         });
       },
     );

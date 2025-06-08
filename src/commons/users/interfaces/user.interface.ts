@@ -1,4 +1,5 @@
 import {
+  AuthenticateDto,
   CronUserBalanceDataDto,
   LoginDto,
   LoginDtoData,
@@ -12,7 +13,8 @@ import {
 export abstract class IUserService {
   abstract create(data: UserDto): Promise<userDataDto>;
   abstract findAll(filter?: UserFilterDto): Promise<userDataDto[]>;
-  abstract login(data: LoginDto): Promise<LoginDtoData>;
+  abstract login(data: LoginDto): Promise<boolean>;
+  abstract authenticate(data: AuthenticateDto): Promise<LoginDtoData>;
   abstract getProfile(filter: UserFilterDto): Promise<userDataDto>;
   abstract update(filter: UserParamsDto, data: UpdateUserDto): Promise<boolean>;
   abstract delete(filter: UserParamsDto): Promise<boolean>;

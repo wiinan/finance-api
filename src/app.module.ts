@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { GoogleModule } from './commons/google/google.module';
 import { FinanceModule } from './commons/finances/finance.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { CustomThrottleModule } from './commons/throttler/throttler.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       signOptions: { expiresIn: '24h' },
     }),
     ScheduleModule.forRoot(),
+    CustomThrottleModule,
     TypeOrmModule,
     UserModule,
     GoogleModule,

@@ -7,9 +7,10 @@ import { IUserService } from '../users/interfaces/user.interface';
 import { UserService } from '../users/user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/database/entities';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [TypeOrmModule.forFeature([User]), AuthModule],
   controllers: [GoogleController],
   providers: [
     GoogleStrategy,

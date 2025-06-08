@@ -77,4 +77,13 @@ export class UserHelper {
       },
     );
   }
+
+  public static mountHtmlAuthCode(code: string): string {
+    return `
+      <div>
+        <p>O codigo para acesso a conta:</p>
+        <string>${code}</string>
+      </div>
+    `;
+  }
 }

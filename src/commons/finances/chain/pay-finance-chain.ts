@@ -9,7 +9,6 @@ import { FinanceService } from '../services';
 import { Finance, User } from 'src/database/entities';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserBalanceDto } from 'src/commons/users/dtos/user.dto';
-import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/commons/users/user.service';
 import { IUserService } from 'src/commons/users/interfaces/user.interface';
 import { QueueProducerService } from 'src/workers/producer-queue';
@@ -30,7 +29,7 @@ export class PayFinanceChain {
     transactionalEntityManager: EntityManager,
   ): Promise<void> {
     const userModule = transactionalEntityManager.getRepository(User);
-    this.userService = new UserService(userModule, new JwtService());
+    this.userService = new UserService(userModule);
 
     await this.userService.updateUserBalance({ id: userId }, userBalance);
   }

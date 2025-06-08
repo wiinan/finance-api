@@ -6,6 +6,7 @@ import { IUserService } from '../users/interfaces/user.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/database/entities';
 import { Repository } from 'typeorm';
+import { IAuthService } from '../auth/auth.interface';
 
 @Injectable()
 export class GoogleService implements IGoogleService {
@@ -13,37 +14,30 @@ export class GoogleService implements IGoogleService {
     @InjectRepository(User)
     private readonly userModel: Repository<User>,
     private readonly userService: IUserService,
+    private readonly authService: IAuthService,
   ) {}
 
   private async createUser(data: GoogleAuth): Promise<LoginDtoData> {
     const newUser = this.userModel.create({
       name: data.name,
       email: data.email,
-      password: data.password,
       provider: 'GOOGLE',
     });
 
     await this.userModel.save(newUser);
 
-    return this.userService.login({
-      email: data.email,
-      password: data.password,
-    });
+    return this.authService.generateBearerToken(newUser);
   }
 
-  private async login(id: number, data: GoogleAuth): Promise<LoginDtoData> {
+  private async login(user: User): Promise<LoginDtoData> {
     await this.userService.update(
-      { id },
+      { id: user.id },
       {
         provider: 'GOOGLE',
-        password: data.password,
       },
     );
 
-    return this.userService.login({
-      email: data.email,
-      password: data.password,
-    });
+    return this.authService.generateBearerToken(user);
   }
 
   async googleLogin(data: GoogleAuth): Promise<LoginDtoData> {
@@ -53,20 +47,17 @@ export class GoogleService implements IGoogleService {
 
     const user = await this.userModel.findOne({
       where: { email: data.email, isDeleted: false },
-      select: ['id', 'email', 'password', 'provider'],
+      select: ['id', 'email', 'provider'],
     });
 
     const hasGoogleAccount = user?.provider === 'GOOGLE';
 
     if (hasGoogleAccount) {
-      return this.userService.login({
-        email: data.email,
-        password: data.password,
-      });
+      return this.authService.generateBearerToken(user);
     }
 
     if (user) {
-      return this.login(user.id, data);
+      return this.login(user);
     }
 
     return this.createUser(data);

@@ -56,12 +56,13 @@ export class FinanceService implements IFinanceService {
         createdAt: true,
         paidAt: true,
         installments: true,
+        description: true,
         user: {
           id: true,
           name: true,
         },
         type: {
-          description: true,
+          name: true,
         },
         paymentMethod: {
           name: true,

@@ -54,6 +54,7 @@ export class InstallmentService implements IInstallmentService {
         financeId: true,
         price: true,
         liquidPrice: true,
+        description: true,
         receivedValue: true,
         competence: true,
         createdAt: true,

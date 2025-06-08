@@ -21,7 +21,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     profile: Profile,
     done: VerifyCallback,
   ): void {
-    const { displayName, emails, provider, id } = profile;
+    const { displayName, emails, provider } = profile;
 
     if (!emails?.length) {
       return done(new Error('No email found'));
@@ -33,7 +33,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       accessToken,
       refreshToken,
       provider,
-      password: id,
     };
 
     done(null, user);

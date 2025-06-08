@@ -1,19 +1,21 @@
 export type UserDto = {
   name: string;
   email: string;
-  password: string;
 };
 
 export type LoginDto = {
   email: string;
-  password: string;
+};
+
+export type AuthenticateDto = {
+  email: string;
+  token: string;
 };
 
 export type userDataDto = {
   id: number;
   name: string;
   email: string;
-  password: string;
   createdAt: Date;
   updatedAt: Date;
   isDeleted: boolean;
@@ -37,12 +39,10 @@ export type UserFilterDto = {
   isDeleted?: boolean;
   isRoot?: boolean;
   provider?: string;
+  userId?: number;
 } & UserBalanceDto;
 
-export type UpdateUserDto = {
-  password?: string;
-} & UserFilterDto &
-  UserBalanceDto;
+export type UpdateUserDto = UserFilterDto & UserBalanceDto;
 
 export type WhereUserParamsDto = {
   parameters: UserFilterDto;

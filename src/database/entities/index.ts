@@ -1,3 +1,4 @@
+import { AuthLog } from './auth-log.entity';
 import { CreditCardFinanceInfo } from './credit-card-finance-info.entity';
 import { FinanceInstallment } from './finance-installments.entity';
 import { FinanceStatus } from './finance-status.entity';
@@ -18,4 +19,5 @@ export {
   CreditCardFinanceInfo,
   PixFinanceInfo,
   PaymentLinkFinanceInfo,
+  AuthLog,
 };

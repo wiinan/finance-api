@@ -11,11 +11,8 @@ export const CreateUserSchema = z
   .object({
     name: ZOD_STRING_REQUIRED,
     email: z.string().email('Preencha com um email valido.'),
-    password: ZOD_STRING_REQUIRED,
-    confirmPassword: ZOD_STRING_REQUIRED,
   })
-  .strip()
-  .refine(({ password, confirmPassword }) => password === confirmPassword);
+  .strip();
 
 export const FindAllUserSchema = z
   .object({
@@ -30,7 +27,13 @@ export const FindAllUserSchema = z
 export const LoginUserSchema = z
   .object({
     email: z.string().email('Preencha com um email valido.'),
-    password: ZOD_STRING_REQUIRED,
+  })
+  .strip();
+
+export const AuthenticateUserSchema = z
+  .object({
+    email: z.string().email('Preencha com um email valido.'),
+    token: ZOD_STRING_REQUIRED,
   })
   .strip();
 

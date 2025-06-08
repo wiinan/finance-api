@@ -12,7 +12,9 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import {
+  AuthenticateDto,
   LoginDto,
+  LoginDtoData,
   userDataDto,
   UserDto,
   UserFilterDto,
@@ -20,6 +22,7 @@ import {
 } from './dtos/user.dto';
 import { ZodValidationPipe } from 'src/middleware/validator.pipe';
 import {
+  AuthenticateUserSchema,
   CreateUserSchema,
   FilterUserSchema,
   FindAllUserSchema,
@@ -28,11 +31,14 @@ import {
 import { IUserService } from './interfaces/user.interface';
 import { AuthGuard } from 'src/middleware/auth';
 import { RootAuthGuard } from 'src/middleware/root.auth';
+import { Throttle } from '@nestjs/throttler';
+import { throttlerConfig } from 'src/commons/throttler/throttler.module';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: IUserService) {}
 
+  @Throttle({ default: throttlerConfig('MEDIUM') })
   @Post()
   @UsePipes(new ZodValidationPipe(CreateUserSchema))
   createUser(@Body() data: UserDto): Promise<userDataDto> {
@@ -46,10 +52,18 @@ export class UserController {
     return this.userService.findAll(filter);
   }
 
+  @Throttle({ default: throttlerConfig('MEDIUM') })
   @Post('login')
   @UsePipes(new ZodValidationPipe(LoginUserSchema))
   login(@Body() data: LoginDto) {
     return this.userService.login(data);
+  }
+
+  @Throttle({ default: throttlerConfig('MEDIUM') })
+  @Post('authenticate')
+  @UsePipes(new ZodValidationPipe(AuthenticateUserSchema))
+  authenticate(@Body() data: AuthenticateDto): Promise<LoginDtoData> {
+    return this.userService.authenticate(data);
   }
 
   @Get('profile')

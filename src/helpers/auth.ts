@@ -23,4 +23,8 @@ export class AuthUtils {
 
     return type === 'Bearer' ? token : undefined;
   }
+
+  public static getAuthCode(): string {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  }
 }
