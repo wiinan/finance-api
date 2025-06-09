@@ -1,5 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  BeforeInsert,
+  BeforeUpdate,
+} from 'typeorm';
 import { IsEmail, MaxLength } from 'class-validator';
+import { AuthUtils } from 'src/helpers/auth';
 
 @Entity('users')
 export class User {
@@ -13,6 +20,10 @@ export class User {
   @Column({ unique: true })
   @IsEmail()
   email: string;
+
+  @Column()
+  @MaxLength(255)
+  password: string;
 
   @Column({ type: 'decimal', default: 0 })
   incomeBalance: number;
@@ -38,4 +49,11 @@ export class User {
 
   @Column({ default: new Date() })
   updatedAt: Date;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  hashPassword() {
+    this.password = AuthUtils.encrypt(this.password);
+    return this.password;
+  }
 }

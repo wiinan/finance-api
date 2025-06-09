@@ -18,6 +18,9 @@ export class AuthLog {
   @MaxLength(6)
   token: string;
 
+  @Column({ default: false })
+  isUsed: boolean;
+
   @Column({ default: new Date() })
   expiresAt: Date;
 

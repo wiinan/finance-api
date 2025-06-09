@@ -59,7 +59,7 @@ export class UserController {
     return this.userService.login(data);
   }
 
-  @Throttle({ default: throttlerConfig('MEDIUM') })
+  @Throttle({ default: throttlerConfig('LONG') })
   @Post('authenticate')
   @UsePipes(new ZodValidationPipe(AuthenticateUserSchema))
   authenticate(@Body() data: AuthenticateDto): Promise<LoginDtoData> {

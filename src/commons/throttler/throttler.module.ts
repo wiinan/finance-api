@@ -28,8 +28,8 @@ export const throttlerConfig = (
       limit: DEFAULT_THROTTLER_LIMIT,
     },
     LONG: {
-      ttl: CalculateUtils.multiplyValues([DEFAULT_TTL_LIMIT, 3]),
-      limit: DEFAULT_THROTTLER_LIMIT,
+      ttl: CalculateUtils.multiplyValues([DEFAULT_TTL_LIMIT, 6]),
+      limit: 1,
     },
   };
 

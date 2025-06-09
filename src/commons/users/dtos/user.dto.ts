@@ -1,14 +1,18 @@
 export type UserDto = {
   name: string;
   email: string;
+  password: string;
+  isRoot?: boolean;
 };
 
 export type LoginDto = {
   email: string;
+  password: string;
 };
 
 export type AuthenticateDto = {
   email: string;
+  password: string;
   token: string;
 };
 
@@ -42,7 +46,8 @@ export type UserFilterDto = {
   userId?: number;
 } & UserBalanceDto;
 
-export type UpdateUserDto = UserFilterDto & UserBalanceDto;
+export type UpdateUserDto = { password?: string } & UserFilterDto &
+  UserBalanceDto;
 
 export type WhereUserParamsDto = {
   parameters: UserFilterDto;

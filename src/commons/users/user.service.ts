@@ -18,6 +18,7 @@ import { pick } from 'lodash';
 import { User } from 'src/database/entities';
 import { IAuthService } from '../auth/auth.interface';
 import { OPT_ACTIONS } from 'src/constants/auth.constants';
+import { AuthUtils } from 'src/helpers/auth';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -37,7 +38,11 @@ export class UserService implements IUserService {
     }
 
     const newUser = this.userModel.create(data);
-    await this.userModel.save(newUser);
+
+    await Promise.all([
+      this.authService?.sendOtpCode(newUser, OPT_ACTIONS.SIGN_IN),
+      this.userModel.save(newUser),
+    ]);
 
     return newUser;
   }
@@ -55,13 +60,19 @@ export class UserService implements IUserService {
   }
 
   public async login(data: LoginDto): Promise<boolean> {
-    const { email } = data;
+    const { email, password } = data;
 
     const user = await this.userModel.findOne({
       where: { email, isDeleted: false },
     });
 
     if (!user) {
+      throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
+    }
+
+    const isValidPassword = AuthUtils.compareSync(password, user.password);
+
+    if (!isValidPassword) {
       throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
     }
 

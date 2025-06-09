@@ -47,12 +47,17 @@ export class AuthService implements IAuthService {
 
     const otpCode = await this.authLogModel.count({
       where: {
-        userId: user.id,
         action,
-        token,
         expiresAt: MoreThan(Utils.getDateWithoutTimezones()),
+        isUsed: false,
+        userId: user.id,
+        token,
       },
     });
+
+    if (otpCode) {
+      await this.authLogModel.update({ userId: user.id }, { isUsed: true });
+    }
 
     return !!otpCode;
   }

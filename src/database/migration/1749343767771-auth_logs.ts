@@ -40,6 +40,12 @@ export class AuthLogs1749343767771 implements MigrationInterface {
             isNullable: false,
           },
           {
+            name: 'isUsed',
+            type: 'boolean',
+            default: false,
+            isNullable: false,
+          },
+          {
             name: 'createdAt',
             type: 'timestamp',
             default: 'now()',

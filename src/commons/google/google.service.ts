@@ -21,6 +21,7 @@ export class GoogleService implements IGoogleService {
     const newUser = this.userModel.create({
       name: data.name,
       email: data.email,
+      password: data.password,
       provider: 'GOOGLE',
     });
 
@@ -47,7 +48,7 @@ export class GoogleService implements IGoogleService {
 
     const user = await this.userModel.findOne({
       where: { email: data.email, isDeleted: false },
-      select: ['id', 'email', 'provider'],
+      select: ['id', 'email', 'provider', 'password'],
     });
 
     const hasGoogleAccount = user?.provider === 'GOOGLE';

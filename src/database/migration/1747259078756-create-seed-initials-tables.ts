@@ -7,8 +7,8 @@ export class CreateSeedInitialsTables1747259078756
     await Promise.all([
       queryRunner.query(
         `INSERT INTO
-            users (name, email, "isRoot")
-            VALUES ('admin', 'admin@gmail.com', true)`,
+            users (name, email, password, "isRoot")
+            VALUES ('admin', 'admin@gmail.com', 123456, true)`,
       ),
       queryRunner.query(
         `INSERT INTO
