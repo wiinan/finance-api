@@ -24,7 +24,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     const { displayName, emails, provider } = profile;
 
     if (!emails?.length) {
-      return done(new Error('No email found'));
+      return done(new Error('Email not found'));
     }
 
     const user = {

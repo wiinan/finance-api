@@ -5,17 +5,6 @@ export type UserDto = {
   isRoot?: boolean;
 };
 
-export type LoginDto = {
-  email: string;
-  password: string;
-};
-
-export type AuthenticateDto = {
-  email: string;
-  password: string;
-  token: string;
-};
-
 export type userDataDto = {
   id: number;
   name: string;
@@ -23,11 +12,6 @@ export type userDataDto = {
   createdAt: Date;
   updatedAt: Date;
   isDeleted: boolean;
-};
-
-export type LoginDtoData = {
-  token: string;
-  user: userDataDto;
 };
 
 export type UserBalanceDto = {

@@ -1,6 +1,8 @@
 import { Finance, FinanceInstallment } from 'src/database/entities';
 import {
   creditCardInfoDto,
+  FinanceWorkerDto,
+  FinanceWorkerResponseDto,
   listFinanceDto,
   ListFinanceFilterDto,
   PaymentLinkInfoDto,
@@ -9,7 +11,10 @@ import {
 import { FindOptionsWhere } from 'typeorm';
 import { SchemaUtils } from 'src/helpers/schema';
 import { pick } from 'lodash';
-import { FINANCE_STATUS } from 'src/constants/finance.constants';
+import {
+  FINANCE_STATUS,
+  FINANCE_STATUS_BY_ID,
+} from 'src/constants/finance.constants';
 import { BadRequestException } from '@nestjs/common';
 
 export class FinanceHelper {
@@ -90,5 +95,17 @@ export class FinanceHelper {
     ) {
       throw new BadRequestException('FINANCE_CANNOT_BE_REMOVED');
     }
+  }
+
+  public static mountFinancesWorkerUpdate(
+    finances: FinanceWorkerDto,
+  ): FinanceWorkerResponseDto[] {
+    return finances.data.map((finance) => ({
+      id: finance.id,
+      isDeleted: finance.isDeleted || false,
+      installment: finance.installment,
+      installmentId: finance.installmentId,
+      statusId: FINANCE_STATUS_BY_ID[finance.statusId],
+    }));
   }
 }

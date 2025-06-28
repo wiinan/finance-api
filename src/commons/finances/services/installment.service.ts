@@ -11,13 +11,18 @@ import { FinanceInstallment } from 'src/database/entities';
 import { Repository } from 'typeorm';
 import { IInstallmentService } from '../interfaces/installment.interface';
 import { FinanceHelper } from '../helpers/finance.helpers';
-import { FINANCE_STATUS } from 'src/constants/finance.constants';
+import {
+  FINANCE_EVENTS,
+  FINANCE_STATUS,
+} from 'src/constants/finance.constants';
+import { EventEmitterService } from 'src/gateways/service/event-emitter';
 
 @Injectable()
 export class InstallmentService implements IInstallmentService {
   constructor(
     @InjectRepository(FinanceInstallment)
     private readonly financeInstallmentModel: Repository<FinanceInstallment>,
+    private readonly eventEmitter?: EventEmitterService,
   ) {}
   async createInstallment(data: FinanceInstallmentsDto[]): Promise<void> {
     await this.financeInstallmentModel
@@ -120,14 +125,20 @@ export class InstallmentService implements IInstallmentService {
       return true;
     }
 
-    await this.financeInstallmentModel
+    const finances = await this.financeInstallmentModel
       .createQueryBuilder()
       .update(FinanceInstallment)
       .set({ statusId: FINANCE_STATUS.CANCELED })
       .where('statusId = :statusId AND isDeleted = false', {
         statusId: FINANCE_STATUS.PROCESSING,
       })
+      .returning(['id', 'statusId', 'installment'])
       .execute();
+
+    this.eventEmitter?.emit(FINANCE_EVENTS.FINANCE_LIST, {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      data: finances.raw,
+    });
 
     return true;
   }

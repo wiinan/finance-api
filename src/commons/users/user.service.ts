@@ -2,13 +2,9 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
-  AuthenticateDto,
   CronUserBalanceDataDto,
-  LoginDto,
-  LoginDtoData,
   UpdateUserDto,
   userDataDto,
-  UserDto,
   UserFilterDto,
   UserParamsDto,
 } from './dtos/user.dto';
@@ -16,36 +12,13 @@ import { IUserService } from './interfaces/user.interface';
 import { UserHelper } from './helpers/user.helpers';
 import { pick } from 'lodash';
 import { User } from 'src/database/entities';
-import { IAuthService } from '../auth/auth.interface';
-import { OPT_ACTIONS } from 'src/constants/auth.constants';
-import { AuthUtils } from 'src/helpers/auth';
 
 @Injectable()
 export class UserService implements IUserService {
   constructor(
     @InjectRepository(User)
     private readonly userModel: Repository<User>,
-    private readonly authService?: IAuthService,
   ) {}
-
-  public async create(data: UserDto): Promise<userDataDto> {
-    const user = await this.userModel.count({
-      where: { email: data.email },
-    });
-
-    if (user) {
-      throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
-    }
-
-    const newUser = this.userModel.create(data);
-
-    await Promise.all([
-      this.authService?.sendOtpCode(newUser, OPT_ACTIONS.SIGN_IN),
-      this.userModel.save(newUser),
-    ]);
-
-    return newUser;
-  }
 
   public async findAll(filter?: UserFilterDto): Promise<User[]> {
     const { query, parameters } = UserHelper.getWhereParams(filter);
@@ -57,51 +30,6 @@ export class UserService implements IUserService {
       .getRawMany();
 
     return users;
-  }
-
-  public async login(data: LoginDto): Promise<boolean> {
-    const { email, password } = data;
-
-    const user = await this.userModel.findOne({
-      where: { email, isDeleted: false },
-    });
-
-    if (!user) {
-      throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
-    }
-
-    const isValidPassword = AuthUtils.compareSync(password, user.password);
-
-    if (!isValidPassword) {
-      throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
-    }
-
-    await this.authService?.sendOtpCode(user, OPT_ACTIONS.SIGN_IN);
-    return true;
-  }
-
-  async authenticate(data: AuthenticateDto): Promise<LoginDtoData> {
-    const { email, token } = data;
-
-    const user = await this.userModel.findOne({
-      where: { email, isDeleted: false },
-    });
-
-    if (!user || !this.authService) {
-      throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
-    }
-
-    const isValidAuth = await this.authService.hasValidOptCode({
-      user,
-      token,
-      action: OPT_ACTIONS.SIGN_IN,
-    });
-
-    if (!isValidAuth) {
-      throw new HttpException('INVALID_TOKEN', HttpStatus.BAD_REQUEST);
-    }
-
-    return this.authService.generateBearerToken(user);
   }
 
   public async getProfile(filter: UserFilterDto): Promise<userDataDto> {

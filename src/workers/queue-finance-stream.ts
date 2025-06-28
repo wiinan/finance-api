@@ -1,11 +1,15 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Job } from 'bullmq';
 import { PayFinanceChain } from 'src/commons/finances/chain';
 import { TANSACTION_QUEUE } from 'src/constants/finance.constants';
 
 @Processor(TANSACTION_QUEUE.PAY)
 export class FinanceProcessQueue extends WorkerHost {
-  constructor(private readonly payFinanceChain: PayFinanceChain) {
+  constructor(
+    private readonly payFinanceChain: PayFinanceChain,
+    private readonly eventEmitter: EventEmitter2,
+  ) {
     super();
   }
 

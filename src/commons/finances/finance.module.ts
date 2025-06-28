@@ -27,11 +27,11 @@ import { CreateFinanceChain } from './chain';
 import { BaseStrategy } from './context/base.strategy';
 import { PayFinanceChain } from './chain/pay-finance-chain';
 import { QueueProducerService } from '../../workers/producer-queue';
-import { FinanceProcessQueue } from '../../workers/queue-process';
 import { BullModule } from '@nestjs/bullmq';
 import { TANSACTION_QUEUE } from 'src/constants/finance.constants';
 import { CronJobFinance } from 'src/crons/finance.cron';
 import { DeleteFinanceChain } from './chain/delete-finance.chain';
+import { FinanceProcessQueue } from 'src/workers/queue-finance-stream';
 
 @Module({
   imports: [

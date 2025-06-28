@@ -12,13 +12,18 @@ import {
 } from '../dtos/finance.dto';
 import { IFinanceService, IInstallmentService } from '../interfaces';
 import { FinanceHelper } from '../helpers/finance.helpers';
-import { FINANCE_STATUS } from 'src/constants/finance.constants';
+import {
+  FINANCE_EVENTS,
+  FINANCE_STATUS,
+} from 'src/constants/finance.constants';
+import { EventEmitterService } from 'src/gateways/service/event-emitter';
 
 @Injectable()
 export class FinanceService implements IFinanceService {
   constructor(
     @InjectRepository(Finance)
     private readonly financeModel: Repository<Finance>,
+    private readonly eventEmitter?: EventEmitterService,
     private readonly installmentService?: IInstallmentService,
   ) {}
 
@@ -153,21 +158,27 @@ export class FinanceService implements IFinanceService {
 
   async resetFinanceTrasaction(): Promise<boolean> {
     const financesWithStatusProcessing = await this.financeModel.count({
-      where: { statusId: FINANCE_STATUS.PROCESSING },
+      where: { statusId: FINANCE_STATUS.PROCESSING, isDeleted: false },
     });
 
     if (!financesWithStatusProcessing) {
       return true;
     }
 
-    await this.financeModel
+    const finances = await this.financeModel
       .createQueryBuilder()
       .update(Finance)
-      .set({ statusId: FINANCE_STATUS.CANCELED, isDeleted: false })
+      .set({ statusId: FINANCE_STATUS.CANCELED })
       .where('statusId = :statusId AND isDeleted = false', {
         statusId: FINANCE_STATUS.PROCESSING,
       })
+      .returning(['id', 'statusId'])
       .execute();
+
+    this.eventEmitter?.emit(FINANCE_EVENTS.FINANCE_LIST, {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      data: finances.raw,
+    });
 
     return true;
   }

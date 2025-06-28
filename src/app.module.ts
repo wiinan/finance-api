@@ -8,6 +8,8 @@ import { GoogleModule } from './commons/google/google.module';
 import { FinanceModule } from './commons/finances/finance.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CustomThrottleModule } from './commons/throttler/throttler.module';
+import { MetaModule } from './commons/meta/meta.module';
+import { CustomEventModule } from './commons/event/event.module';
 
 @Module({
   imports: [
@@ -22,10 +24,12 @@ import { CustomThrottleModule } from './commons/throttler/throttler.module';
     }),
     ScheduleModule.forRoot(),
     CustomThrottleModule,
+    CustomEventModule,
     TypeOrmModule,
     UserModule,
     GoogleModule,
     FinanceModule,
+    MetaModule,
   ],
   controllers: [],
   providers: [],

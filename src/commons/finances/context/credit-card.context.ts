@@ -143,9 +143,7 @@ export class CreditCardContext implements IBaseContext {
       throw new HttpException('FINANCE_ALREADY_PAID', HttpStatus.BAD_REQUEST);
 
     if (
-      [FINANCE_STATUS.CANCELED, FINANCE_STATUS.REFUND].includes(
-        finance.statusId,
-      )
+      [FINANCE_STATUS.CLOSED, FINANCE_STATUS.REFUND].includes(finance.statusId)
     )
       throw new HttpException('FINANCE_CANNOT_BE_PAID', HttpStatus.BAD_REQUEST);
   }

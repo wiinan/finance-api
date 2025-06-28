@@ -1,8 +1,8 @@
 import { Controller, Get, Request, UseGuards } from '@nestjs/common';
 import { GoogleOAuthGuard } from 'src/middleware';
 import { RequestGoogle } from './google.dto';
-import { LoginDtoData } from '../users/dtos/user.dto';
 import { IGoogleService } from './google.interface';
+import { LoginDtoData } from '../auth/auth.dto';
 
 @Controller('auth')
 export class GoogleController {

@@ -22,6 +22,7 @@ export class CronJobFinance {
         this.financeService.resetFinanceTrasaction(),
         this.installmentService.resetInstallmentTrasaction(),
       ]);
+
       this.logger.debug('Finance Cronjob Finished with success');
     } catch (error) {
       this.logger.debug('Finance Cronjob Finished with error', error);

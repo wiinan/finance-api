@@ -176,3 +176,21 @@ export type UpdateFinanceBodyDto = {
   description?: string;
   isDeleted?: boolean;
 };
+
+export type FinanceWorkerDto = {
+  data: Array<{
+    id: number;
+    statusId: number;
+    installment?: number;
+    installmentId?: number;
+    isDeleted?: boolean;
+  }>;
+};
+
+export type FinanceWorkerResponseDto = {
+  id: number;
+  statusId: string;
+  isDeleted: boolean;
+  installment?: number;
+  installmentId?: number;
+};
