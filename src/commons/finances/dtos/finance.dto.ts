@@ -8,6 +8,8 @@ export type PercentageOptionsDto = {
   precision?: number;
 };
 
+export type PaymetMethodIdsDto = 1 | 2 | 3 | 4 | 6;
+
 export type PixInfoDto = {
   type?: string;
   key?: string;
@@ -44,7 +46,7 @@ export type FinanceDto = {
   competence: Date;
   typeId: number;
   statusId: number;
-  paymentMethodId: number;
+  paymentMethodId: PaymetMethodIdsDto;
   userId: number;
   liquidPrice?: number;
   installments?: number;
@@ -81,7 +83,7 @@ export type ListFinanceFilterDto = {
   installments?: number | FindOperator<any>;
   typeId?: number;
   statusId?: number;
-  paymentMethodId?: number;
+  paymentMethodId?: PaymetMethodIdsDto;
   userId?: number;
   description?: string;
 };

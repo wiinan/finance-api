@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { IMetaService } from './meta.interface';
-import { PaymentMethod } from 'src/database/entities';
+import { FinanceStatus, PaymentMethod, Types } from 'src/database/entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { fromEvent, Observable } from 'rxjs';
@@ -15,11 +15,23 @@ export class MetaService implements IMetaService {
   constructor(
     @InjectRepository(PaymentMethod)
     private readonly paymentMethodModel: Repository<PaymentMethod>,
+    @InjectRepository(Types)
+    private readonly typeModel: Repository<Types>,
+    @InjectRepository(FinanceStatus)
+    private readonly financeStatusModel: Repository<FinanceStatus>,
     private readonly eventEmitter: EventEmitterService,
   ) {}
 
   async getPaymentMethods(): Promise<PaymentMethod[]> {
     return this.paymentMethodModel.find({ where: { isDeleted: false } });
+  }
+
+  async getTypes(): Promise<Types[]> {
+    return this.typeModel.find();
+  }
+
+  async getFinanceStatus(): Promise<FinanceStatus[]> {
+    return this.financeStatusModel.find();
   }
 
   financeWorker(): Observable<MessageEvent> {

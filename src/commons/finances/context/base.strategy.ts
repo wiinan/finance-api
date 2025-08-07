@@ -4,6 +4,7 @@ import {
   FinancePayBodyDto,
   FinancePayOptionsDto,
   FinancePayRequestDto,
+  PaymetMethodIdsDto,
   RequestCreateFinanceDto,
 } from '../dtos/finance.dto';
 import {
@@ -24,7 +25,7 @@ export class BaseStrategy implements IBaseStrategy {
   private strategy: IBaseContext;
 
   constructor(
-    private readonly paymentMethodId: number,
+    private readonly paymentMethodId: PaymetMethodIdsDto,
     private readonly payTransactionQueue?: QueueProducerService,
   ) {
     const paymentContextById = {

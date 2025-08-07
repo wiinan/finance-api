@@ -1,10 +1,10 @@
-export const PAYMENT_METHODS = {
-  PIX: 1,
-  CREDIT_CARD: 2,
-  TRANFER: 3,
-  PAYMENT_LINK: 4,
-  INSTALLMENT: 6, // Atualiza par o id 5
-};
+export enum PAYMENT_METHODS {
+  PIX = 1,
+  CREDIT_CARD = 2,
+  TRANFER = 3,
+  PAYMENT_LINK = 4,
+  INSTALLMENT = 6, // Atualiza par o id 5
+}
 
 export const PAYMENT_METHODS_TAXES = {
   [PAYMENT_METHODS.PIX]: 0.01,
@@ -12,15 +12,15 @@ export const PAYMENT_METHODS_TAXES = {
   [PAYMENT_METHODS.PAYMENT_LINK]: 0.03,
 };
 
-export const FINANCE_STATUS = {
-  OPEN: 1,
-  PAID: 2,
-  PARTIAL: 3,
-  CLOSED: 4,
-  CANCELED: 5,
-  REFUND: 6,
-  PROCESSING: 7,
-};
+export enum FINANCE_STATUS {
+  OPEN = 1,
+  PAID = 2,
+  PARTIAL = 3,
+  CLOSED = 4,
+  CANCELED = 5,
+  REFUND = 6,
+  PROCESSING = 7,
+}
 
 export const FINANCE_STATUS_BY_ID = {
   [FINANCE_STATUS.OPEN]: 'OPEN',
@@ -32,15 +32,15 @@ export const FINANCE_STATUS_BY_ID = {
   [FINANCE_STATUS.PROCESSING]: 'PROCESSING',
 };
 
-export const FINANCE_TYPES = {
-  OUT: 1,
-  INPUT: 2,
-};
+export enum FINANCE_TYPES {
+  OUT = 1,
+  INPUT = 2,
+}
 
-export const TANSACTION_QUEUE = {
-  PAY: 'payFinanceTransaction',
-};
+export enum TANSACTION_QUEUE {
+  PAY = 'payFinanceTransaction',
+}
 
-export const FINANCE_EVENTS = {
-  FINANCE_LIST: 'FINANCE_LIST',
-};
+export enum FINANCE_EVENTS {
+  FINANCE_LIST = 'FINANCE_LIST',
+}

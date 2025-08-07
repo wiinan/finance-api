@@ -90,6 +90,8 @@ export class FinanceHelper {
       ![
         FINANCE_STATUS.CANCELED,
         FINANCE_STATUS.OPEN,
+        FINANCE_STATUS.PAID,
+        FINANCE_STATUS.PARTIAL,
         FINANCE_STATUS.CLOSED,
       ].includes(finance.statusId)
     ) {
